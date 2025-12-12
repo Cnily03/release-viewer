@@ -24,13 +24,22 @@ const labelVariant = new Proxy(labelVariantMap, {
   get: (target, prop: string) => target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "info"
 });
 
-function fmtDate(d: number | string | Date): string {
+function fmtDate(d: number | string | Date, long: boolean = false): string {
   const date = new Date(d);
   const now = new Date();
+  const localDelta = -date.getTimezoneOffset();
+  const timezone = `GMT${localDelta >= 0 ? "+" : ""}${Math.floor(localDelta / 60)}`;
   const monLiteral = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const day = date.getDate();
   const mon = monLiteral[date.getMonth()];
   const year = date.getFullYear();
+  if (long) {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hours12 = hours % 12 === 0 ? 12 : hours % 12;
+    return `${mon} ${day}, ${year}, ${hours12}:${minutes.toString().padStart(2, "0")} ${ampm} ${timezone}`;
+  }
   if (year === now.getFullYear()) {
     return `${mon} ${day}`;
   } else {
@@ -117,7 +126,9 @@ const assetsWithSourceCode = release.assets
         >
           <a class="*:inline">
             <Icon name="octicon:clock-16" width={16} height={16} />
-            <span class="ml-1">{fmtDate(release.published_at)}</span>
+            <span class="ml-1" title={fmtDate(release.published_at, true)}>
+              {fmtDate(release.published_at)}
+            </span>
           </a>
           <a
             class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
@@ -237,6 +248,7 @@ const assetsWithSourceCode = release.assets
                       "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
                       "w-1/4 min-[768px]:w-1/2 min-[1012px]:w-1/4"
                     )}
+                    title={t === "artifact" ? fmtDate(asset.updated_at, true) : fmtDate(release.published_at, true)}
                   >
                     {t === "artifact" ? fmtDate(asset.updated_at) : fmtDate(release.published_at)}
                   </span>
