@@ -1,0 +1,261 @@
+---
+import type { Release } from "@/config";
+import { Icon } from "astro-icon/components";
+import Tag, { type Props as TagProps } from "./Tag.astro";
+import clsx from "clsx";
+import Copy from "./Copy.astro";
+import { Markdown } from "@/scripts/markdown";
+import "@/styles/github-markdown.css";
+import type { ReleaseAsset } from "@/config";
+
+export interface Props {
+  repoUrl?: string;
+  release: Release;
+  defaultOpen?: boolean;
+  hiddenMeta?: boolean;
+}
+
+const labelVariantMap: Record<string, TagProps["variant"]> = {
+  latest: "success",
+  prerelease: "warning"
+};
+
+const labelVariant = new Proxy(labelVariantMap, {
+  get: (target, prop: string) => target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "info"
+});
+
+function fmtDate(d: number | string | Date): string {
+  const date = new Date(d);
+  const now = new Date();
+  const monLiteral = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const day = date.getDate();
+  const mon = monLiteral[date.getMonth()];
+  const year = date.getFullYear();
+  if (year === now.getFullYear()) {
+    return `${mon} ${day}`;
+  } else {
+    return `${mon} ${day}, ${year}`;
+  }
+}
+
+function fmtSize(size: number): string {
+  const sizeUnit = ["B", "KB", "MB", "GB", "TB"];
+  let idx = 0;
+  let sz = size;
+  while (sz >= 1000 && idx < sizeUnit.length - 1) {
+    sz /= 1024;
+    idx++;
+  }
+  return `${Math.round(sz * 100) / 100} ${sizeUnit[idx]}`;
+}
+
+const { release, repoUrl, hiddenMeta, defaultOpen } = Astro.props;
+
+const md = new Markdown({
+  gfm: true,
+  math: true,
+  breaks: true,
+  github: repoUrl ? repoUrl : undefined,
+  prettyCode: true,
+  externalLinks: true
+});
+
+function processReleaseBody(body: string, repoUrl?: string) {
+  if (repoUrl) {
+    const urlEscaped = repoUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(?<!\\[)${urlEscaped}/compare/(\\d[\\d.]+\\d)\\.\\.\\.(\\d[\\d.]+\\d)(?!\\])`, "g");
+    return body.replace(regex, (m, from, to) => {
+      return `[\`${from}...${to}\`](${repoUrl}/compare/${from}...${to})`;
+    });
+  }
+  return body;
+}
+
+const html = await md.render(processReleaseBody(release.body, repoUrl));
+
+const assetsWithSourceCode = release.assets
+  .map(asset => [asset, "artifact"] as [ReleaseAsset, "artifact" | "source"])
+  .concat([
+    [
+      {
+        name: "Source code (tar.gz)",
+        download_url: release.tar_url,
+        size: 0,
+        updated_at: release.published_at,
+        digest: ""
+      },
+      "source"
+    ] as const,
+    [
+      {
+        name: "Source code (zip)",
+        download_url: release.zip_url,
+        size: 0,
+        updated_at: release.published_at,
+        digest: ""
+      },
+      "source"
+    ] as const
+  ]);
+---
+
+<div class="border rounded-lg gh-theme border-(--borderColor-default)">
+  <div class="p-4 border-b border-solid gh-theme border-b-(--borderColor-default)">
+    <div class="flex" data-role="release-header">
+      <div class="mb-3 flex-1">
+        <h1 class="inline text-[2rem] font-medium mr-3">{release.name}</h1>
+        <span class="inline-block align-text-bottom">
+          {release.labels.map(label => <Tag variant={labelVariant[label]}>{label}</Tag>)}
+        </span>
+      </div>
+    </div>
+    {
+      !hiddenMeta && (
+        <div
+          class="block mb-3 pb-6 border-b border-solid gh-theme border-(--borderColor-default) gh-theme text-(--fgColor-muted) text-[14px] space-x-6 **:align-middle"
+          data-role="release-meta"
+        >
+          <a class="*:inline">
+            <Icon name="octicon:clock-16" width={16} height={16} />
+            <span class="ml-1">{fmtDate(release.published_at)}</span>
+          </a>
+          <a
+            class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
+            {...(repoUrl && {
+              href: `${repoUrl}/tree/${release.tag_name}`,
+              target: "_blank",
+              rel: "noopener noreferrer"
+            })}
+          >
+            <Icon name="octicon:tag-16" width={16} height={16} />
+            <span class="ml-1">{release.tag_name}</span>
+          </a>
+          <a
+            class="*:inline gh-theme hover:text-(--fgColor-accent)"
+            href={release.commit.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="octicon:git-commit-16" width={16} height={16} />
+            <code class="ml-1">{release.commit.sha.slice(0, 7)}</code>
+          </a>
+        </div>
+      )
+    }
+    <div class="my-3" data-role="release-body">
+      <article class="markdown-body" set:html={html} />
+    </div>
+  </div>
+  <div class="p-4">
+    <div class="mb-4" data-role="release-assets">
+      <details open={defaultOpen}>
+        <summary class="w-full cursor-pointer mb-4">
+          <div class="inline-flex flex-row items-center w-max">
+            <h3 class="inline text-[1.25rem] font-medium mx-2">Assets</h3>
+            <span
+              class="inline-block rounded-[2em] gh-theme bg-(--bgColor-neutral-muted) text-center text-xs px-1.5 leading-4.5 font-medium"
+              >{assetsWithSourceCode.length}</span
+            >
+          </div>
+        </summary>
+        <ul
+          class="border rounded-lg space-y-3 border-solid gh-theme border-(--borderColor-default) *:first:border-t-0! text-sm"
+        >
+          {
+            assetsWithSourceCode.map(([asset, t]) => (
+              <li
+                class={clsx(
+                  "flex flex-row items-center border-t border-solid gh-theme border-t-(--borderColor-default) px-4 py-2 m-0",
+                  "flex-wrap min-[768px]:flex-nowrap"
+                )}
+              >
+                <div
+                  class={clsx(
+                    "flex flex-row justify-start items-center truncate",
+                    "w-full min-[768px]:w-1/2 min-[1012px]:w-1/2"
+                  )}
+                >
+                  <span class="w-4 gh-theme gh-theme text-(--fgColor-muted)">
+                    <Icon
+                      name={t === "artifact" ? "octicon:package-16" : "octicon:file-zip-16"}
+                      width={16}
+                      height={16}
+                    />
+                  </span>
+                  <a
+                    href={asset.download_url}
+                    rel="noopener noreferrer"
+                    class="ml-2 gh-theme text-(--fgColor-accent) truncate pr-2 hover:underline"
+                  >
+                    {t === "artifact" ? (
+                      <span class="font-medium">{asset.name}</span>
+                    ) : (
+                      <>
+                        <span class="font-medium">{asset.name.replace(/\s*\(.+\)$/, "")}</span>
+                        <span>{asset.name.match(/(\(.+\))$/)?.[1]}</span>
+                      </>
+                    )}
+                  </a>
+                </div>
+                <div
+                  class={clsx(
+                    "flex flex-row justify-end items-center truncate",
+                    "w-full min-[768px]:w-1/2 min-[1012px]:w-1/2"
+                  )}
+                >
+                  <span class="flex-1 flex justify-end truncate">
+                    <div
+                      class={clsx(
+                        "flex flex-row justify-end items-center text-end font-mono text-xs gh-theme text-(--fgColor-muted) truncate min-w-0 max-w-62.5",
+                        "hidden min-[368px]:flex min-[768px]:hidden min-[1012px]:flex"
+                      )}
+                    >
+                      {t === "artifact" && asset.digest && (
+                        <>
+                          <span class="flex-1 whitespace-nowrap truncate">{asset.digest}</span>
+                          <Copy
+                            copyText={asset.digest}
+                            class:list="inline-flex rounded-md w-7 h-7 items-center justify-center hover:bg-theme-text/10"
+                          >
+                            <Icon name="octicon:check-16" width={16} height={16} class="text-success" slot="when-ok" />
+                            <Icon name="octicon:copy-16" width={16} height={16} />
+                          </Copy>
+                        </>
+                      )}
+                    </div>
+                  </span>
+                  <span
+                    class={clsx(
+                      "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
+                      "w-1/4 min-[768px]:w-1/2 min-[1012px]:w-1/4"
+                    )}
+                  >
+                    {t === "artifact" && fmtSize(asset.size)}
+                  </span>
+                  <span
+                    class={clsx(
+                      "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
+                      "w-1/4 min-[768px]:w-1/2 min-[1012px]:w-1/4"
+                    )}
+                  >
+                    {t === "artifact" ? fmtDate(asset.updated_at) : fmtDate(release.published_at)}
+                  </span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+    </div>
+    <div data-role="release-footer">
+      <a
+        href={release.detail_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex rounded-full border border-solid border-theme-text/20 w-7 h-7 justify-center items-center bg-theme-text/5 hover:bg-theme-text/10"
+      >
+        <Icon name="octicon:link-16" width={14} height={14} title="See original url for details" />
+      </a>
+    </div>
+  </div>
+</div>

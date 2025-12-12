@@ -1,0 +1,9 @@
+---
+import config from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import FileView from "@/components/FileView.astro";
+---
+
+<Layout title={config.name} class:list="p-8">
+  <FileView repoUrl={config.repo_url} release={config.releases[10]!} defaultOpen />
+</Layout>

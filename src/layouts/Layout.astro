@@ -1,0 +1,49 @@
+---
+import "@/styles/global.css";
+import type { HTMLAttributes } from "astro/types";
+
+export interface Props extends HTMLAttributes<"div"> {
+  title: string;
+}
+
+const { title, ...rest } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <script>
+      function isDarkMode() {
+        const preferredDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const themeLocal = localStorage.getItem("theme");
+        if (themeLocal === "dark") return true;
+        if (themeLocal === "light") return false;
+        try {
+          const themeJson = JSON.parse(themeLocal ?? "null");
+          if (themeJson?.followsSystem) return preferredDark;
+          if (themeJson?.colorSchemeFollowsSystem) return preferredDark;
+          if (themeJson?.mode === "dark") return true;
+          if (themeJson?.mode === "light") return false;
+          if (themeJson?.colorScheme === "dark") return true;
+          if (themeJson?.colorScheme === "light") return false;
+        } catch {}
+
+        return preferredDark;
+      }
+      if (isDarkMode()) {
+        document.documentElement.dataset.theme = "dark";
+      } else {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+  </head>
+
+  <body class="bg-theme-bg text-theme-text font-sans">
+    <div {...rest}>
+      <slot />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+export interface Props extends HTMLAttributes<"button"> {
+  copyText: string;
+  /**
+   * @default 1000
+   */
+  duration?: number;
+}
+
+const { copyText, duration = 1500, ...rest } = Astro.props;
+---
+
+<>
+  <button
+    class:list={["p-0 cursor-pointer", rest.class]}
+    data-clipboard-copy
+    data-copy={copyText}
+    data-duration={duration}
+    {...rest}
+  >
+    {
+      Astro.slots.has("when-ok") && (
+        <span data-role="ok" class="hidden">
+          <slot name="when-ok" />
+        </span>
+      )
+    }
+    {
+      Astro.slots.has("when-error") && (
+        <span data-role="error" class="hidden">
+          <slot name="when-error" />
+        </span>
+      )
+    }
+    <span data-rule="normal"><slot>Copy</slot></span>
+  </button>
+  <script>
+    const buttons = document.querySelectorAll("[data-clipboard-copy]");
+    buttons.forEach(button => {
+      const copyText = button.getAttribute("data-copy") || "";
+      const duration = parseInt(button.getAttribute("data-duration") || "1500", 10);
+      let prevented = false;
+      button.addEventListener("click", async () => {
+        if (prevented) return;
+        prevented = true;
+        const okEl = button.querySelector("[data-role='ok']");
+        const errorEl = button.querySelector("[data-role='error']");
+        const normalEl = button.querySelector("[data-rule='normal']");
+        try {
+          await navigator.clipboard.writeText(copyText);
+          if (okEl) {
+            normalEl?.classList.add("hidden");
+            okEl.classList.remove("hidden");
+            setTimeout(() => {
+              okEl.classList.add("hidden");
+              normalEl?.classList.remove("hidden");
+              prevented = false;
+            }, duration);
+          }
+        } catch (err) {
+          console.error("Failed to copy text: ", err);
+          if (errorEl) {
+            normalEl?.classList.add("hidden");
+            errorEl.classList.remove("hidden");
+            setTimeout(() => {
+              errorEl.classList.add("hidden");
+              normalEl?.classList.remove("hidden");
+              prevented = false;
+            }, duration);
+          }
+        }
+        if (!okEl && !errorEl) {
+          prevented = false;
+        }
+      });
+      button.removeAttribute("data-copy");
+      button.removeAttribute("data-duration");
+      button.nextElementSibling?.remove();
+    });
+  </script>
+</>

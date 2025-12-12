@@ -1,0 +1,31 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+export interface Props extends HTMLAttributes<"span"> {
+  variant?: "success" | "primary" | "warning" | "danger" | "info";
+}
+
+const { variant: _, ...rest } = Astro.props;
+
+const variant = Astro.props.variant ?? "info";
+
+const borderColors: Record<NonNullable<Props["variant"]>, string> = {
+  success: "border-success",
+  primary: "border-primary",
+  warning: "border-warning",
+  danger: "border-danger",
+  info: "border-theme-text/65"
+};
+
+const textColors: Record<NonNullable<Props["variant"]>, string> = {
+  success: "text-success",
+  primary: "text-primary",
+  warning: "text-warning",
+  danger: "text-danger",
+  info: "text-theme-text/65"
+};
+---
+
+<span class:list={["tag", borderColors[variant], textColors[variant], rest.class]} {...rest}>
+  <slot />
+</span>
