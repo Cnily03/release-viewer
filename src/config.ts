@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 
 export interface ReleaseAsset {
   name: string;
@@ -31,6 +32,10 @@ export interface Config {
   releases: Release[];
 }
 
-const config = JSON.parse(fs.readFileSync("config.json", "utf-8")) as Config;
+const filepath = path.resolve((process.argv.length > 3 && process.argv[3]) || "config.json");
+const time = new Date().toLocaleTimeString("en-US", { hour12: false });
+console.info(`\x1b[2m${time}\x1b[0m \x1b[34m[app]\x1b[0m Loading config from \x1b[34m${filepath}\x1b[0m`);
+
+const config = JSON.parse(fs.readFileSync(filepath, "utf-8")) as Config;
 
 export default config;
