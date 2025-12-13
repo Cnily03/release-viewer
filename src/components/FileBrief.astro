@@ -6,16 +6,17 @@ import clsx from "clsx";
 import { Icon } from "astro-icon/components";
 
 export interface Props {
-  repoUrl?: string;
   release: Release;
 }
 
-const { release, repoUrl } = Astro.props;
+const { release } = Astro.props;
 ---
 
 <div class="w-full md:pt-6 md:pr-10 mb-3 md:mb-0">
   <div class="mb-2 mr-3 md:mr-0 pt-1 sm:pt-0">
-    <span title={fmtDate(release.published_at, true)}>{fmtDate(release.published_at)}</span>
+    <span title={fmtDate(release.published_at, true)} data-datetime={release.published_at}
+      >{fmtDate(release.published_at)}</span
+    >
   </div>
   <div
     class={clsx(
@@ -31,7 +32,7 @@ const { release, repoUrl } = Astro.props;
             alt={release.author!.name}
             width={20}
             height={20}
-            class="inline-block rounded-xs shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-1"
+            class="inline-block rounded-sm shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-1"
           />
         </Show>
         <a
@@ -44,15 +45,15 @@ const { release, repoUrl } = Astro.props;
       </span>
     </Show>
     <a
-      class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
-      {...repoUrl && {
-        href: `${repoUrl}/tree/${release.tag_name}`,
+      class={clsx("*:inline", release.tag.tree_url && "gh-theme hover:text-(--fgColor-accent)")}
+      {...release.tag.tree_url && {
+        href: release.tag.tree_url,
         target: "_blank",
         rel: "noopener noreferrer"
       }}
     >
       <Icon name="octicon:tag-16" width={16} height={16} />
-      <span class="ml-1">{release.tag_name}</span>
+      <span class="ml-1">{release.tag.name}</span>
     </a>
     <Show when={release.commit}>
       <a

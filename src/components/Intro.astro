@@ -31,7 +31,10 @@ const { name, description, repoFullname, repoUrl, avatarUrl, labels = [], licens
             class="rounded-sm bg-theme-text/10 shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-3"
           />
         </Show>
-        <h1 class="text-2xl font-semibold">{repoFullname || name}</h1>
+        <h1 class="text-2xl font-semibold">
+          <span class="font-normal">{(repoFullname || name).split("/").slice(0, -1).join(" / ") + " / "}</span>
+          {(repoFullname || name).split("/").pop()}
+        </h1>
       </div>
       <div class="text-xs" data-role="intro-mirror">
         <Show when={repoFullname || repoUrl}>
@@ -41,7 +44,7 @@ const { name, description, repoFullname, repoUrl, avatarUrl, labels = [], licens
             href={repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="gh-theme text-(--fgColor-accent) hover:underline underline-offset-[0.2rem]"
+            class="gh-theme text-(--fgColor-accent) hover:underline"
             set:text={repoFullname || name}
           />
         </Show>
@@ -62,12 +65,19 @@ const { name, description, repoFullname, repoUrl, avatarUrl, labels = [], licens
   <div class="border-t border-solid gh-theme border-(--borderColor-default)" data-role="intro-splitter"></div>
   <div class="space-y-2" data-role="intro-body">
     <div>{description}</div>
-    <div class="space-x-2">
+    <div class="space-x-2 space-y-1">
       {
         labels.map(label => {
           return (
-            <Tag type="primary" variant="bg">
-              {label}
+            <Tag
+              type="primary"
+              variant="bg"
+              title={label}
+              class="group cursor-pointer gh-theme hover:bg-(--fgColor-accent)/90"
+            >
+              <span class="gh-theme text-(--fgColor-accent)/90 group-hover:text-theme-text text-xs font-medium px-0.5">
+                {label}
+              </span>
             </Tag>
           );
         })

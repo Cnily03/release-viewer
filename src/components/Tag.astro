@@ -4,12 +4,15 @@ import type { HTMLAttributes } from "astro/types";
 export interface Props extends HTMLAttributes<"span"> {
   type?: "success" | "primary" | "warning" | "danger" | "info";
   variant?: "border" | "text" | "bg";
+  size?: "sm" | "md";
 }
 
 const { type: _, variant: __, ...rest } = Astro.props;
 
 const type = Astro.props.type ?? "info";
 const variant = Astro.props.variant ?? "border";
+
+const size = Astro.props.size ?? "md";
 
 const borderColors: Record<NonNullable<Props["type"]>, string> = {
   success: "border-success",
@@ -34,6 +37,11 @@ const textColors: Record<NonNullable<Props["type"]>, string> = {
   danger: "text-danger",
   info: "text-theme-text/65"
 };
+
+const sizeStyles: Record<NonNullable<Props["size"]>, string> = {
+  sm: "px-1.5 py-px text-xs",
+  md: "px-2 py-0.5 text-sm"
+};
 ---
 
 <span
@@ -41,6 +49,7 @@ const textColors: Record<NonNullable<Props["type"]>, string> = {
     "tag",
     variant === "bg" && bgColors[type],
     variant === "border" && `border ${borderColors[type]}`,
+    sizeStyles[size],
     textColors[type],
     rest.class
   ]}

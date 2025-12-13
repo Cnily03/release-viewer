@@ -21,6 +21,62 @@ export function fmtDate(d: number | string | Date, long: boolean = false): strin
   }
 }
 
+export function fmtLocalRelatedDate(d: number | string | Date): string {
+  const date = new Date(d);
+  const now = new Date();
+  const deltaMs = now.getTime() - date.getTime();
+  const deltaSec = Math.floor(deltaMs / 1000);
+  if (deltaSec < 60) {
+    return "now";
+  }
+  const deltaMin = Math.floor(deltaSec / 60);
+  if (deltaMin < 60) {
+    return `${deltaMin} minute${deltaMin === 1 ? "" : "s"} ago`;
+  }
+  const deltaHrs = Math.floor(deltaMin / 60);
+  if (deltaHrs < 24) {
+    return `${deltaHrs} hour${deltaHrs === 1 ? "" : "s"} ago`;
+  }
+  const deltaDays = Math.floor(deltaHrs / 24);
+  if (deltaDays < 7) {
+    return `${deltaDays} day${deltaDays === 1 ? "" : "s"} ago`;
+  }
+  const deltaWeeks = Math.floor(deltaDays / 7);
+  if (deltaWeeks < 4) {
+    return `${deltaWeeks} week${deltaWeeks === 1 ? "" : "s"} ago`;
+  }
+  return fmtDate(date);
+}
+
+export function bindLocalRelatedDateUpdate(selector: string | NodeListOf<Element>, interval: number = 60000) {
+  const els = typeof selector === "string" ? document.querySelectorAll(selector) : selector;
+  const pools = new Set([...els]);
+  function update() {
+    for (const el of pools) {
+      const datetime = el.getAttribute("data-datetime");
+      if (!datetime) {
+        pools.delete(el);
+        continue;
+      }
+      const d = new Date(datetime);
+      if (Number.isNaN(d.getTime())) {
+        pools.delete(el);
+        continue;
+      }
+      const original = el.textContent.trim();
+      const related = fmtLocalRelatedDate(d).trim();
+      if (original !== related) {
+        pools.delete(el);
+        el.textContent = related;
+        continue;
+      }
+      el.textContent = related;
+    }
+  }
+  const timeout = setInterval(update, interval);
+  return timeout;
+}
+
 export function fmtSize(size: number): string {
   const sizeUnit = ["B", "KB", "MB", "GB", "TB"];
   let idx = 0;
@@ -31,3 +87,12 @@ export function fmtSize(size: number): string {
   }
   return `${Math.round(sz * 100) / 100} ${sizeUnit[idx]}`;
 }
+
+const labelTypeMap: Record<string, "success" | "primary" | "warning" | "danger" | "info"> = {
+  latest: "success",
+  "pre-release": "warning",
+};
+
+export const labelType = new Proxy(labelTypeMap, {
+  get: (target, prop: string) => target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "info",
+});

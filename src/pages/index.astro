@@ -3,10 +3,24 @@ import config from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import FileContainer from "@/components/FileContainer.astro";
 import Intro from "@/components/Intro.astro";
+import ReleaseList, { type ReleaseListItem } from "@/components/ReleaseList.astro";
+
+const list: ReleaseListItem[] = config.releases.map(release => ({
+  name: release.name,
+  url: `./${release.tag.name}/`,
+  tag: release.tag,
+  commit: release.commit,
+  labels: release.labels,
+  lastUpdated: release.published_at
+}));
+
+const indexTags = new Set(config.index_tags);
+
+const indexReleases = config.releases.filter(rl => indexTags.has(rl.tag.name));
 ---
 
 <Layout title={config.name} class:list="p-8">
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="intro">
     <Intro
       name={config.name}
       description={config.description}
@@ -17,5 +31,15 @@ import Intro from "@/components/Intro.astro";
       license={config.license}
     />
   </div>
-  <FileContainer repoUrl={config.repo_url} release={config.releases[10]!} defaultOpen />
+  <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="list">
+    <ReleaseList list={list} />
+  </div>
+  <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="releases">
+    {
+      indexReleases.map(release => {
+        const containsLatest = release.labels.some(label => label.trim().toLowerCase() === "latest");
+        return <FileContainer repoUrl={config.repo_url} release={release} defaultOpen={containsLatest} />;
+      })
+    }
+  </div>
 </Layout>

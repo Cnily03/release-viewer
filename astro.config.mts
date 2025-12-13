@@ -17,7 +17,7 @@ dotenv.config({
 export default defineConfig({
   integrations: [icon()],
 
-  trailingSlash: "never",
+  trailingSlash: "always",
   base: process.env.APP_BUILD_BASE || "/",
 
   vite: {

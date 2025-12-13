@@ -15,7 +15,7 @@ const { release, repoUrl, defaultOpen, hiddenMeta, ...rest } = Astro.props;
 
 <div class:list={["flex flex-col md:flex-row my-5", rest.class]} {...rest}>
   <div class="w-full md:w-2/11">
-    <FileBrief repoUrl={repoUrl} release={release!} />
+    <FileBrief release={release!} />
   </div>
   <div class="w-full md:w-9/11">
     <FileView repoUrl={repoUrl} release={release} defaultOpen={defaultOpen} hiddenMeta={hiddenMeta} />

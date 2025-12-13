@@ -46,7 +46,7 @@
       },
       "correctness": {
         "useJsxKeyInIterable": "off",
-        "noUnusedImports": "error",
+        "noUnusedImports": "warn",
         "noConstAssign": "error",
         "noUnreachable": "error",
         "noUnsafeFinally": "error",

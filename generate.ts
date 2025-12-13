@@ -322,6 +322,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     avatar_url: repoData.owner.avatar_url,
     labels: repoData.topics,
     license: repoData.license ? repoData.license.name : "",
+    index_tags: [],
     redirect: {},
     releases: [],
   };
@@ -363,7 +364,10 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     }
     const oneRelease: Release = {
       name: release.name,
-      tag_name: release.tag_name,
+      tag: {
+        name: release.tag_name,
+        tree_url: `${repoData.html_url}/tree/${release.tag_name}`,
+      },
       labels: labels,
       // created_at: release.created_at,
       // updated_at: release.published_at,
@@ -401,12 +405,15 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   }
   logger.success(`Compiled ${Logger.ANSI_GREEN}${config.releases.length} releases${Logger.ANSI_RESET}.`);
 
+  const indexTags = new Set<string>();
+
   // create redirects
-  const releaseTags = new Set(config.releases.map((r) => r.tag_name));
+  const releaseTags = new Set(config.releases.map((r) => r.tag.name));
   logger.info(`Creating redirects...`);
   // latest redirect;
   if (releaseTags.has(latestTag)) {
     config.redirect.latest = latestTag;
+    indexTags.add(latestTag);
     logger.info(
       ` - Created redirect:`,
       `${Logger.ANSI_CYAN}latest${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${latestTag}${Logger.ANSI_RESET}`
@@ -415,7 +422,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   // version redirects
   const versions = new Map<string, string>();
   for (const tagname of releaseTags) {
-    const match = tagname.match(/^(\d+)(\.\d+)?/);
+    const match = tagname.match(/^v?(\d+)(\.\d+)?/);
     if (match) {
       const major = match[1]!;
       const minor = match[2] ? match[2].substring(1)! : null;
@@ -444,13 +451,20 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   // set redirects
   for (const [version, tagName] of versions) {
     config.redirect[version] = tagName;
+    indexTags.add(tagName);
     logger.info(
       ` - Created redirect:`,
       `${Logger.ANSI_CYAN}${version}${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${tagName}${Logger.ANSI_RESET}`
     );
   }
-
   logger.success(`Created ${Logger.ANSI_GREEN}${Object.keys(config.redirect).length} redirects${Logger.ANSI_RESET}.`);
+
+  // set index tags
+  config.index_tags = Array.from(indexTags);
+  logger.success(`Set ${Logger.ANSI_GREEN}${config.index_tags.length} index tags${Logger.ANSI_RESET}:`);
+  for (const tag of config.index_tags) {
+    logger.info(` - ${Logger.ANSI_CYAN}${tag}${Logger.ANSI_RESET}`);
+  }
 
   return config;
 }

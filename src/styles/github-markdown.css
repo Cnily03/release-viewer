@@ -178,7 +178,8 @@
 .markdown-body a {
   background-color: transparent;
   color: var(--fgColor-accent);
-  text-decoration: none;
+  /* text-decoration: none; */
+  text-decoration: underline;
   text-underline-offset: 0.2rem;
 }
 
@@ -643,6 +644,11 @@
 .markdown-body summary h2 {
   padding-bottom: 0;
   border-bottom: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  list-style: disc;
 }
 
 .markdown-body ul.no-list,
@@ -1112,6 +1118,12 @@
 .markdown-body a:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
+}
+
+.markdown-body .user-mention {
+  color: var(--fgColor-default);
+  font-weight: var(--base-text-weight-semibold, 600);
+  white-space: nowrap;
 }
 
 .markdown-body [tabindex="0"]:focus:not(:focus-visible),

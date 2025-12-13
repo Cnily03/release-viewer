@@ -36,12 +36,14 @@ body {
 
 @layer utilities {
   .tag {
-    @apply inline-block px-2 py-0.5 text-sm rounded-full;
+    @apply inline-block rounded-full;
   }
   .break-word {
     overflow-wrap: break-word;
     word-break: break-word;
   }
 }
+
+@custom-variant xs (@media (width >= 20rem /* 320px */));
 
 @custom-variant hover (&:hover);

@@ -45,5 +45,9 @@ const { title, ...rest } = Astro.props;
     <div {...rest}>
       <slot />
     </div>
+    <script>
+      import { bindLocalRelatedDateUpdate } from "@/scripts/format";
+      bindLocalRelatedDateUpdate(document.querySelectorAll("[data-datetime]"));
+    </script>
   </body>
 </html>

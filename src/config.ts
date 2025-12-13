@@ -11,7 +11,10 @@ export interface ReleaseAsset {
 
 export interface Release {
   name: string;
-  tag_name: string;
+  tag: {
+    name: string;
+    tree_url?: string;
+  };
   labels: string[];
   published_at: string;
   detail_url: string;
@@ -38,6 +41,7 @@ export interface Config {
   avatar_url?: string;
   labels: string[];
   license?: string;
+  index_tags: string[];
   redirect: Record<string, string>;
   releases: Release[];
 }

@@ -1,0 +1,137 @@
+---
+import { fmtDate, labelType } from "@/scripts/format";
+import { Icon } from "astro-icon/components";
+import type { HTMLAttributes } from "astro/types";
+import Tag from "./Tag.astro";
+import clsx from "clsx";
+import Show from "./Show.astro";
+
+export interface ReleaseListItem {
+  name: string;
+  url: string;
+  tag: {
+    name: string;
+    tree_url?: string;
+  };
+  commit?: {
+    sha: string;
+    url?: string;
+  };
+  labels?: string[];
+  lastUpdated: string;
+}
+
+export interface Props extends HTMLAttributes<"div"> {
+  list: ReleaseListItem[];
+}
+
+const labelColorMap: Record<string, string> = {
+  latest: "text-success"
+  // "pre-release": "gh-theme text-(--fgColor-muted)",
+};
+
+const labelColor = new Proxy(labelColorMap, {
+  get: (target, prop: string) =>
+    target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "gh-theme text-(--fgColor-muted)"
+});
+
+const { list, ...rest } = Astro.props;
+---
+
+<div class:list={["w-full", rest.class]} {...rest}>
+  <ul
+    class="list-none w-full border rounded-lg space-y-3 border-solid gh-theme border-(--borderColor-default) *:first:border-t-0! text-sm"
+  >
+    {
+      list.map(item => {
+        const labels = item.labels || [];
+        return (
+          <li class="list-item flex-wrap md:flex-nowrap">
+            <div class={clsx("flex flex-1flex-row justify-start items-center truncate", "w-full md:w-1/2")}>
+              <span class={clsx("w-4", labels.length ? labelColor[labels[0]!] : "gh-theme text-(--fgColor-muted)")}>
+                <Icon name="octicon:file-directory-16" width={16} height={16} />
+              </span>
+              <a
+                href={item.url}
+                rel="noopener noreferrer"
+                class="group inline-flex flex-1 flex-row ml-2 font-medium truncate"
+              >
+                <span class="gh-theme group-hover:text-(--fgColor-accent) group-hover:underline truncate">
+                  {item.name}
+                </span>
+                <span class="flex-1 inline-block align-text-bottom ml-2 space-x-2">
+                  {labels.map(label => (
+                    <Tag type={labelType[label]} size="sm">
+                      {label}
+                    </Tag>
+                  ))}
+                </span>
+              </a>
+            </div>
+            <div class={clsx("flex flex-row justify-end items-center truncate", "w-full md:w-1/2")}>
+              <div class="flex-1" />
+              <div
+                class={clsx(
+                  "items-center justify-start ml-2 gh-theme text-(--fgColor-muted) truncate",
+                  "hidden xs:flex xs:w-3/8 sm:w-3/10 md:w-1/2 lg:w-3/8"
+                )}
+              >
+                <a
+                  class="flex flex-row items-center *:inline gh-theme hover:text-(--fgColor-accent) truncate"
+                  {...(item.tag.tree_url && {
+                    href: item.tag.tree_url,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                  })}
+                >
+                  <Icon name="octicon:tag-16" width={16} height={16} />
+                  <span class="ml-2 truncate">{item.tag.name}</span>
+                </a>
+              </div>
+              <div
+                class={clsx(
+                  "items-center justify-start ml-2 gh-theme text-(--fgColor-muted) truncate",
+                  "hidden sm:flex sm:w-2/10 md:hidden lg:flex lg:w-2/8"
+                )}
+              >
+                <Show when={item.commit}>
+                  <a
+                    class="flex flex-row items-center *:inline gh-theme hover:text-(--fgColor-accent)"
+                    href={item.commit!.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon name="octicon:git-commit-16" width={16} height={16} />
+                    <span class="ml-2 font-mono">{item.commit!.sha.slice(0, 7)}</span>
+                  </a>
+                </Show>
+              </div>
+              <div
+                class={clsx(
+                  "text-end ml-2 gh-theme text-(--fgColor-muted)",
+                  "w-full xs:w-3/8 sm:w-3/10 md:w-1/2 lg:w-3/8"
+                )}
+              >
+                <span
+                  class="min-w-[clamp(50px,15vw,75px)]"
+                  title={fmtDate(item.lastUpdated, true)}
+                  data-datetime={item.lastUpdated}
+                >
+                  {fmtDate(item.lastUpdated)}
+                </span>
+              </div>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style scoped>
+  @reference "../styles/global.css";
+  .list-item {
+    @apply flex flex-row items-center border-t border-solid px-4 py-2 m-0;
+    @apply border-t-(--borderColor-default);
+  }
+</style>

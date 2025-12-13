@@ -2,10 +2,10 @@
 import { Icon } from "astro-icon/components";
 import clsx from "clsx";
 import type { Release, ReleaseAsset } from "@/config";
-import { fmtDate, fmtSize } from "@/scripts/format";
+import { fmtDate, fmtSize, labelType } from "@/scripts/format";
 import { Markdown } from "@/scripts/markdown";
 import Copy from "./Copy.astro";
-import Tag, { type Props as TagProps } from "./Tag.astro";
+import Tag from "./Tag.astro";
 import "@/styles/github-markdown.css";
 import Show from "./Show.astro";
 
@@ -15,15 +15,6 @@ export interface Props {
   defaultOpen?: boolean;
   hiddenMeta?: boolean;
 }
-
-const labelVariantMap: Record<string, TagProps["type"]> = {
-  latest: "success",
-  prerelease: "warning"
-};
-
-const labelVariant = new Proxy(labelVariantMap, {
-  get: (target, prop: string) => target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "info"
-});
 
 const { release, repoUrl, hiddenMeta, defaultOpen } = Astro.props;
 
@@ -74,77 +65,87 @@ const assetsWithSourceCode = release.assets
 ---
 
 <div class="w-full border rounded-lg gh-theme border-(--borderColor-default)">
+  <span id={release.tag.name}></span>
+  {release.labels.some(l => l.toLowerCase() === "latest") && <span id="latest" />}
   <div class="p-4 border-b border-solid gh-theme border-b-(--borderColor-default)">
-    <div class="flex" data-role="release-header">
+    <div class="flex" data-role="release-header" id={release.name}>
       <div class="mb-3 flex-1">
         <h1 class="inline text-[2rem] font-medium mr-3">{release.name}</h1>
-        <span class="inline-block align-text-bottom">
-          {release.labels.map(label => <Tag type={labelVariant[label]}>{label}</Tag>)}
+        <span class="inline-block align-text-bottom space-x-2">
+          {
+            release.labels.map(label => (
+              <Tag type={labelType[label]} size="md" class="font-medium">
+                {label}
+              </Tag>
+            ))
+          }
         </span>
       </div>
     </div>
-    {
-      !hiddenMeta && (
-        <div
-          class={clsx(
-            "flex flex-row flex-wrap mb-3 pb-6 border-b border-solid gh-theme border-(--borderColor-default) gh-theme text-(--fgColor-muted) text-sm",
-            "*:mr-5 *:mb-2 **:align-middle"
-          )}
-          data-role="release-meta"
-        >
-          <Show when={release.author}>
-            <span class="*:inline">
-              <Show when={release.author?.avatar_url}>
-                <img
-                  src={release.author!.avatar_url}
-                  alt={release.author!.name}
-                  width={20}
-                  height={20}
-                  class="inline-block rounded-xs bg-theme-text/10 shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-1"
-                />
-              </Show>
-              <a
-                class="font-semibold hover:underline"
-                href={release.author!.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                set:text={`${release.author?.avatar_url ? "" : "@"}${release.author!.name}`}
+    <Show when={!hiddenMeta}>
+      <div
+        class={clsx(
+          "flex flex-row flex-wrap mb-3 pb-6 border-b border-solid gh-theme border-(--borderColor-default) gh-theme text-(--fgColor-muted) text-sm",
+          "*:mr-5 *:mb-2 **:align-middle"
+        )}
+        data-role="release-meta"
+      >
+        <Show when={release.author}>
+          <span class="*:inline">
+            <Show when={release.author?.avatar_url}>
+              <img
+                src={release.author!.avatar_url}
+                alt={release.author!.name}
+                width={20}
+                height={20}
+                class="inline-block rounded-sm bg-theme-text/10 shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-1"
               />
-              <span>released this</span>
-              <span title={fmtDate(release.published_at, true)}>{fmtDate(release.published_at)}</span>
-            </span>
-          </Show>
-          {/* <a class="*:inline">
-            <Icon name="octicon:clock-16" width={16} height={16} />
-            <span class="ml-1" title={fmtDate(release.published_at, true)}>
-              {fmtDate(release.published_at)}
-            </span>
-          </a> */}
-          <a
-            class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
-            {...(repoUrl && {
-              href: `${repoUrl}/tree/${release.tag_name}`,
-              target: "_blank",
-              rel: "noopener noreferrer"
-            })}
-          >
-            <Icon name="octicon:tag-16" width={16} height={16} />
-            <span class="ml-1">{release.tag_name}</span>
-          </a>
-          <Show when={release.commit}>
+            </Show>
             <a
-              class="*:inline gh-theme hover:text-(--fgColor-accent)"
-              href={release.commit!.url}
+              class="font-semibold hover:underline"
+              href={release.author!.url}
               target="_blank"
               rel="noopener noreferrer"
+              set:text={`${release.author?.avatar_url ? "" : "@"}${release.author!.name}`}
+            />
+            <span>released this</span>
+            <span title={fmtDate(release.published_at, true)} data-datetime={release.published_at}
+              >{fmtDate(release.published_at)}</span
             >
-              <Icon name="octicon:git-commit-16" width={16} height={16} />
-              <code class="ml-1">{release.commit!.sha.slice(0, 7)}</code>
-            </a>
-          </Show>
-        </div>
-      )
-    }
+          </span>
+        </Show>
+        {
+          /* <a class="*:inline">
+            <Icon name="octicon:clock-16" width={16} height={16} />
+            <span class="ml-1" title={fmtDate(release.published_at, true)} data-datetime={release.published_at}>
+              {fmtDate(release.published_at)}
+            </span>
+          </a> */
+        }
+        <a
+          class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
+          {...release.tag.tree_url && {
+            href: release.tag.tree_url,
+            target: "_blank",
+            rel: "noopener noreferrer"
+          }}
+        >
+          <Icon name="octicon:tag-16" width={16} height={16} />
+          <span class="ml-1">{release.tag.name}</span>
+        </a>
+        <Show when={release.commit}>
+          <a
+            class="*:inline gh-theme hover:text-(--fgColor-accent)"
+            href={release.commit!.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="octicon:git-commit-16" width={16} height={16} />
+            <code class="ml-1">{release.commit!.sha.slice(0, 7)}</code>
+          </a>
+        </Show>
+      </div>
+    </Show>
     <div class="my-3" data-role="release-body">
       <article class="markdown-body" set:html={html} />
     </div>
@@ -162,16 +163,11 @@ const assetsWithSourceCode = release.assets
           </div>
         </summary>
         <ul
-          class="border rounded-lg space-y-3 border-solid gh-theme border-(--borderColor-default) *:first:border-t-0! text-sm"
+          class="list-none border rounded-lg space-y-3 border-solid gh-theme border-(--borderColor-default) *:first:border-t-0! text-sm"
         >
           {
             assetsWithSourceCode.map(([asset, t]) => (
-              <li
-                class={clsx(
-                  "flex flex-row items-center border-t border-solid gh-theme border-t-(--borderColor-default) px-4 py-2 m-0",
-                  "flex-wrap md:flex-nowrap"
-                )}
-              >
+              <li class="list-item flex-wrap md:flex-nowrap">
                 <div class={clsx("flex flex-row justify-start items-center truncate", "w-full md:w-1/2 lg:w-1/2")}>
                   <span class="w-4 gh-theme gh-theme text-(--fgColor-muted)">
                     <Icon
@@ -199,7 +195,7 @@ const assetsWithSourceCode = release.assets
                     <div
                       class={clsx(
                         "flex flex-row justify-end items-center text-end font-mono text-xs gh-theme text-(--fgColor-muted) truncate min-w-0 max-w-62.5",
-                        "hidden min-w-xs:flex md:hidden lg:flex"
+                        "hidden xs:flex md:hidden lg:flex"
                       )}
                     >
                       <Show when={t === "artifact" && asset.digest}>
@@ -228,6 +224,7 @@ const assetsWithSourceCode = release.assets
                       "w-1/4 md:w-1/2 lg:w-1/4"
                     )}
                     title={t === "artifact" ? fmtDate(asset.updated_at, true) : fmtDate(release.published_at, true)}
+                    data-datetime={t === "artifact" ? asset.updated_at : release.published_at}
                   >
                     {t === "artifact" ? fmtDate(asset.updated_at) : fmtDate(release.published_at)}
                   </span>
@@ -250,3 +247,11 @@ const assetsWithSourceCode = release.assets
     </div>
   </div>
 </div>
+
+<style scoped>
+  @reference "../styles/global.css";
+  .list-item {
+    @apply flex flex-row items-center border-t border-solid px-4 py-2 m-0;
+    @apply border-t-(--borderColor-default);
+  }
+</style>

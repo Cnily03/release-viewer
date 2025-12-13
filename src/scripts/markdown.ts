@@ -1,4 +1,10 @@
 import rehypeExternalLinks from "rehype-external-links";
+import rehypeGithubAlert from "rehype-github-alert";
+import rehypeGithubColor from "rehype-github-color";
+import rehypeGithubDir from "rehype-github-dir";
+import rehypeGithubEmoji from "rehype-github-emoji";
+import rehypeGithubImage from "rehype-github-image";
+import rehypeGithubNoTranslate from "rehype-github-notranslate";
 import rehypeKatex from "rehype-katex";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -6,7 +12,6 @@ import rehypeStringify from "rehype-stringify";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkGithub, { defaultBuildUrl } from "remark-github";
-import { remarkAlert } from "remark-github-blockquote-alert";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
@@ -52,24 +57,29 @@ export class Markdown {
     if (options?.github) {
       this.processor.use(remarkGithub, {
         repository: options.github,
+        mentionStrong: false,
         buildUrl(values) {
           return defaultBuildUrl(values);
         },
       });
-      this.processor.use(remarkAlert);
-      // make blockquote alert title capitalized
       this.processor.use(() => (tree) => {
         // biome-ignore lint/suspicious/noExplicitAny: this should be Node
-        visit(tree, "blockquote", (node: any) => {
-          if (node.children && node.children.length > 0 && node.children[0].type === "paragraph") {
-            const firstParagrash = node.children[0];
-            if (firstParagrash.children && firstParagrash.children.length > 1) {
-              const first = firstParagrash.children[0];
-              const isFirstSvg = first.type === "emphasis" && first.data && first.data.hName === "svg";
-              const second = firstParagrash.children[1];
-              const isSecondText = second.type === "text";
-              if (isFirstSvg && isSecondText) {
-                second.value = second.value.charAt(0).toUpperCase() + second.value.toLowerCase().slice(1);
+        visit(tree, "link", (node: any) => {
+          if (node.children && node.children.length === 1) {
+            const child = node.children[0];
+            if (child.type !== "text") return;
+            const value = child.value;
+            const url = node.url.replace(/^http:\/\//, "https://");
+            const base = "https://github.com";
+            if (value.length > 0 && value[0] === "@") {
+              const user = value.slice(1);
+              if (url === `${base}/${user}`) {
+                // add class
+                node.data = {
+                  hProperties: {
+                    className: "user-mention",
+                  },
+                };
               }
             }
           }
@@ -77,10 +87,19 @@ export class Markdown {
       });
     }
     if (options?.math) {
-      this.processor?.use(remarkMath);
+      this.processor.use(remarkMath);
     }
     // rehype
     this.processor.use(remarkRehype);
+    if (options?.github) {
+      this.processor
+        ?.use(rehypeGithubAlert)
+        .use(rehypeGithubColor)
+        .use(rehypeGithubDir)
+        .use(rehypeGithubEmoji)
+        .use(rehypeGithubImage)
+        .use(rehypeGithubNoTranslate);
+    }
     if (options?.sanitize && !options.github) {
       const schema = Object.assign({}, defaultSchema);
       schema.attributes = Object.assign({}, schema.attributes, {
@@ -90,22 +109,22 @@ export class Markdown {
         path: [["d"], ["fill-rule"]],
       });
       schema.tagNames!.push("svg", "path");
-      this.processor?.use(rehypeSanitize, schema);
+      this.processor.use(rehypeSanitize, schema);
     }
     if (options?.externalLinks) {
-      this.processor?.use(rehypeExternalLinks, {
+      this.processor.use(rehypeExternalLinks, {
         target: "_blank",
         rel: ["noopener", "noreferrer"],
       });
     }
 
     if (options?.math) {
-      this.processor?.use(rehypeKatex);
+      this.processor.use(rehypeKatex);
       import("katex/dist/katex.css");
       import("@/styles/katex.css");
     }
     if (options?.prettyCode) {
-      this.processor?.use(rehypePrettyCode, {
+      this.processor.use(rehypePrettyCode, {
         grid: true,
         theme: {
           dark: "github-dark",
@@ -121,6 +140,6 @@ export class Markdown {
 
   async render(markdown: string) {
     const vfile = await this.processor.process(markdown);
-    return vfile.toString();
+    return String(vfile);
   }
 }
