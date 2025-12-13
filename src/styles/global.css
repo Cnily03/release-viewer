@@ -10,14 +10,38 @@ body {
   padding: 0;
 }
 
-:root {
-  --bg-color: oklch(100% 0 0);
-  --text-color: oklch(25.421% 0.01115 254.089);
+@utility theme-light {
+  & {
+    --bg-color: oklch(100% 0 0);
+    --text-color: oklch(25.421% 0.01115 254.089);
+  }
+}
+
+@utility theme-dark {
+  & {
+    --bg-color: oklch(0.177 0.01404 258.383);
+    --text-color: oklch(97.034% 0.01038 248.179);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    @apply theme-dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    @apply theme-light;
+  }
+}
+
+[data-theme="light"] {
+  @apply theme-light;
 }
 
 [data-theme="dark"] {
-  --bg-color: oklch(0.177 0.01404 258.383);
-  --text-color: oklch(97.034% 0.01038 248.179);
+  @apply theme-dark;
 }
 
 @theme {
@@ -32,6 +56,8 @@ body {
   --color-primary: oklch(0.55 0.2153 262.9);
   --color-warning: oklch(0.65 0.2346 91.12);
   --color-danger: oklch(0.55 0.2346 29.12);
+
+  --breakpoint-xs: 20rem;
 }
 
 @layer utilities {
@@ -43,7 +69,5 @@ body {
     word-break: break-word;
   }
 }
-
-@custom-variant xs (@media (width >= 20rem /* 320px */));
 
 @custom-variant hover (&:hover);
