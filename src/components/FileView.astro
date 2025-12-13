@@ -1,12 +1,13 @@
 ---
-import type { Release } from "@/config";
 import { Icon } from "astro-icon/components";
-import Tag, { type Props as TagProps } from "./Tag.astro";
 import clsx from "clsx";
-import Copy from "./Copy.astro";
+import type { Release, ReleaseAsset } from "@/config";
+import { fmtDate, fmtSize } from "@/scripts/format";
 import { Markdown } from "@/scripts/markdown";
+import Copy from "./Copy.astro";
+import Tag, { type Props as TagProps } from "./Tag.astro";
 import "@/styles/github-markdown.css";
-import type { ReleaseAsset } from "@/config";
+import Show from "./Show.astro";
 
 export interface Props {
   repoUrl?: string;
@@ -24,40 +25,6 @@ const labelVariant = new Proxy(labelVariantMap, {
   get: (target, prop: string) => target[prop.toLowerCase().replace(/[^a-z0-9_-]/gi, "")] ?? "info"
 });
 
-function fmtDate(d: number | string | Date, long: boolean = false): string {
-  const date = new Date(d);
-  const now = new Date();
-  const localDelta = -date.getTimezoneOffset();
-  const timezone = `GMT${localDelta >= 0 ? "+" : ""}${Math.floor(localDelta / 60)}`;
-  const monLiteral = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const day = date.getDate();
-  const mon = monLiteral[date.getMonth()];
-  const year = date.getFullYear();
-  if (long) {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const hours12 = hours % 12 === 0 ? 12 : hours % 12;
-    return `${mon} ${day}, ${year}, ${hours12}:${minutes.toString().padStart(2, "0")} ${ampm} ${timezone}`;
-  }
-  if (year === now.getFullYear()) {
-    return `${mon} ${day}`;
-  } else {
-    return `${mon} ${day}, ${year}`;
-  }
-}
-
-function fmtSize(size: number): string {
-  const sizeUnit = ["B", "KB", "MB", "GB", "TB"];
-  let idx = 0;
-  let sz = size;
-  while (sz >= 1000 && idx < sizeUnit.length - 1) {
-    sz /= 1024;
-    idx++;
-  }
-  return `${Math.round(sz * 100) / 100} ${sizeUnit[idx]}`;
-}
-
 const { release, repoUrl, hiddenMeta, defaultOpen } = Astro.props;
 
 const md = new Markdown({
@@ -72,7 +39,7 @@ const md = new Markdown({
 function processReleaseBody(body: string, repoUrl?: string) {
   if (repoUrl) {
     const urlEscaped = repoUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp(`(?<!\\[)${urlEscaped}/compare/(\\d[\\d.]+\\d)\\.\\.\\.(\\d[\\d.]+\\d)(?!\\])`, "g");
+    const regex = new RegExp(`(?<!\\[)${urlEscaped}/compare/([\\w.]+)\\.\\.\\.([\\w.]+)(?!\\])`, "g");
     return body.replace(regex, (m, from, to) => {
       return `[\`${from}...${to}\`](${repoUrl}/compare/${from}...${to})`;
     });
@@ -108,7 +75,7 @@ const assetsWithSourceCode = release.assets
   ]);
 ---
 
-<div class="border rounded-lg gh-theme border-(--borderColor-default)">
+<div class="w-full border rounded-lg gh-theme border-(--borderColor-default)">
   <div class="p-4 border-b border-solid gh-theme border-b-(--borderColor-default)">
     <div class="flex" data-role="release-header">
       <div class="mb-3 flex-1">
@@ -121,15 +88,38 @@ const assetsWithSourceCode = release.assets
     {
       !hiddenMeta && (
         <div
-          class="block mb-3 pb-6 border-b border-solid gh-theme border-(--borderColor-default) gh-theme text-(--fgColor-muted) text-[14px] space-x-6 **:align-middle"
+          class={clsx(
+            "flex flex-row flex-wrap mb-3 pb-6 border-b border-solid gh-theme border-(--borderColor-default) gh-theme text-(--fgColor-muted) text-sm",
+            "*:mr-5 *:mb-2 **:align-middle"
+          )}
           data-role="release-meta"
         >
-          <a class="*:inline">
+          <Show when={release.author}>
+            <span class="*:inline">
+              <img
+                src={release.author!.avatar_url}
+                alt={release.author!.name}
+                width={20}
+                height={20}
+                class="inline-block rounded-xs shadow-theme-text/15 shadow-[0_0_0_1px] align-middle"
+              />
+              <a
+                class="ml-1 font-semibold hover:underline"
+                href={release.author!.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                set:text={release.author!.name}
+              />
+              <span>released this</span>
+              <span title={fmtDate(release.published_at, true)}>{fmtDate(release.published_at)}</span>
+            </span>
+          </Show>
+          {/* <a class="*:inline">
             <Icon name="octicon:clock-16" width={16} height={16} />
             <span class="ml-1" title={fmtDate(release.published_at, true)}>
               {fmtDate(release.published_at)}
             </span>
-          </a>
+          </a> */}
           <a
             class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
             {...(repoUrl && {
@@ -141,15 +131,17 @@ const assetsWithSourceCode = release.assets
             <Icon name="octicon:tag-16" width={16} height={16} />
             <span class="ml-1">{release.tag_name}</span>
           </a>
-          <a
-            class="*:inline gh-theme hover:text-(--fgColor-accent)"
-            href={release.commit.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Icon name="octicon:git-commit-16" width={16} height={16} />
-            <code class="ml-1">{release.commit.sha.slice(0, 7)}</code>
-          </a>
+          <Show when={release.commit}>
+            <a
+              class="*:inline gh-theme hover:text-(--fgColor-accent)"
+              href={release.commit!.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="octicon:git-commit-16" width={16} height={16} />
+              <code class="ml-1">{release.commit!.sha.slice(0, 7)}</code>
+            </a>
+          </Show>
         </div>
       )
     }
@@ -177,15 +169,10 @@ const assetsWithSourceCode = release.assets
               <li
                 class={clsx(
                   "flex flex-row items-center border-t border-solid gh-theme border-t-(--borderColor-default) px-4 py-2 m-0",
-                  "flex-wrap min-[768px]:flex-nowrap"
+                  "flex-wrap md:flex-nowrap"
                 )}
               >
-                <div
-                  class={clsx(
-                    "flex flex-row justify-start items-center truncate",
-                    "w-full min-[768px]:w-1/2 min-[1012px]:w-1/2"
-                  )}
-                >
+                <div class={clsx("flex flex-row justify-start items-center truncate", "w-full md:w-1/2 lg:w-1/2")}>
                   <span class="w-4 gh-theme gh-theme text-(--fgColor-muted)">
                     <Icon
                       name={t === "artifact" ? "octicon:package-16" : "octicon:file-zip-16"}
@@ -208,17 +195,12 @@ const assetsWithSourceCode = release.assets
                     )}
                   </a>
                 </div>
-                <div
-                  class={clsx(
-                    "flex flex-row justify-end items-center truncate",
-                    "w-full min-[768px]:w-1/2 min-[1012px]:w-1/2"
-                  )}
-                >
+                <div class={clsx("flex flex-row justify-end items-center truncate", "w-full md:w-1/2 lg:w-1/2")}>
                   <span class="flex-1 flex justify-end truncate">
                     <div
                       class={clsx(
                         "flex flex-row justify-end items-center text-end font-mono text-xs gh-theme text-(--fgColor-muted) truncate min-w-0 max-w-62.5",
-                        "hidden min-[368px]:flex min-[768px]:hidden min-[1012px]:flex"
+                        "hidden min-w-xs:flex md:hidden lg:flex"
                       )}
                     >
                       {t === "artifact" && asset.digest && (
@@ -238,7 +220,7 @@ const assetsWithSourceCode = release.assets
                   <span
                     class={clsx(
                       "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
-                      "w-1/4 min-[768px]:w-1/2 min-[1012px]:w-1/4"
+                      "w-1/4 md:w-1/2 lg:w-1/4"
                     )}
                   >
                     {t === "artifact" && fmtSize(asset.size)}
@@ -246,7 +228,7 @@ const assetsWithSourceCode = release.assets
                   <span
                     class={clsx(
                       "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
-                      "w-1/4 min-[768px]:w-1/2 min-[1012px]:w-1/4"
+                      "w-1/4 md:w-1/2 lg:w-1/4"
                     )}
                     title={t === "artifact" ? fmtDate(asset.updated_at, true) : fmtDate(release.published_at, true)}
                   >

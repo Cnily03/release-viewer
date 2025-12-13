@@ -15,7 +15,12 @@ export interface Release {
   labels: string[];
   published_at: string;
   detail_url: string;
-  commit: {
+  author?: {
+    name: string;
+    url: string;
+    avatar_url: string;
+  };
+  commit?: {
     sha: string;
     url: string;
   };

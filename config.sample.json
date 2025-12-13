@@ -16,6 +16,11 @@
       "labels": ["Latest"],
       "published_at": "2025-11-01T06:17:48Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.14",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "eb2993e6ee840edc4bc108a59661fdb53a6748de",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/eb2993e6ee840edc4bc108a59661fdb53a6748de"
@@ -102,6 +107,11 @@
       "labels": [],
       "published_at": "2025-08-31T10:34:06Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.11",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "34d301c57f71e330c59d797ff7426b0f8a9a6f7a",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/34d301c57f71e330c59d797ff7426b0f8a9a6f7a"
@@ -188,6 +198,11 @@
       "labels": [],
       "published_at": "2025-08-30T15:42:26Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.10",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "917d478e83e30057f37cc7e2147169fb2d97eefd",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/917d478e83e30057f37cc7e2147169fb2d97eefd"
@@ -274,6 +289,11 @@
       "labels": [],
       "published_at": "2025-08-21T16:11:34Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.9",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "ca6cea214a29c751e91663619da8991aac9623cb",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/ca6cea214a29c751e91663619da8991aac9623cb"
@@ -332,6 +352,11 @@
       "labels": [],
       "published_at": "2025-07-27T03:18:16Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.8",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "8caeb434ed9f266ca14ce738a0af6d868c1c31b1",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/8caeb434ed9f266ca14ce738a0af6d868c1c31b1"
@@ -418,6 +443,11 @@
       "labels": [],
       "published_at": "2025-07-27T02:28:15Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.7",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "7783bb98e29c692c07f36d1c892e421f6e05e3f4",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/7783bb98e29c692c07f36d1c892e421f6e05e3f4"
@@ -476,6 +506,11 @@
       "labels": [],
       "published_at": "2025-07-13T16:55:08Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.6",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "0be4d8ffa0b0be0bd8f6f2860a12a474943ed4c8",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/0be4d8ffa0b0be0bd8f6f2860a12a474943ed4c8"
@@ -562,6 +597,11 @@
       "labels": [],
       "published_at": "2025-07-03T04:07:23Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.5",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "ab44df03644ad78db4bc864a33a8b668a4bd3913",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/ab44df03644ad78db4bc864a33a8b668a4bd3913"
@@ -648,6 +688,11 @@
       "labels": [],
       "published_at": "2025-06-27T15:23:02Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.4",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "8764c944accddf6763c9f66e0d0b4977820287a0",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/8764c944accddf6763c9f66e0d0b4977820287a0"
@@ -734,6 +779,11 @@
       "labels": [],
       "published_at": "2025-05-07T04:20:44Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.3",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "a6c451be9e655b04b9bdbb761daecb40b4073100",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/a6c451be9e655b04b9bdbb761daecb40b4073100"
@@ -820,6 +870,11 @@
       "labels": [],
       "published_at": "2025-04-25T12:02:39Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.2",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "65f43105e1c1833f4d93702031fc13b4ada3c963",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/65f43105e1c1833f4d93702031fc13b4ada3c963"
@@ -906,6 +961,11 @@
       "labels": [],
       "published_at": "2025-04-23T04:39:49Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.1",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "38e680a60f53e35a187f0a90d5e707180f53f1d0",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/38e680a60f53e35a187f0a90d5e707180f53f1d0"
@@ -992,6 +1052,11 @@
       "labels": [],
       "published_at": "2025-04-23T04:03:55Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.5.0",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "42b046f24362a53ffa18e0da5f6e0717899f277b",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/42b046f24362a53ffa18e0da5f6e0717899f277b"
@@ -1078,6 +1143,11 @@
       "labels": [],
       "published_at": "2025-04-22T14:00:33Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.9",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "91fbc3ae619cbb5bfdf613d37194e0888b095c65",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/91fbc3ae619cbb5bfdf613d37194e0888b095c65"
@@ -1164,6 +1234,11 @@
       "labels": [],
       "published_at": "2025-04-20T09:16:01Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.8",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "0b8b872f895db251165dc689e556e749263ed130",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/0b8b872f895db251165dc689e556e749263ed130"
@@ -1250,6 +1325,11 @@
       "labels": [],
       "published_at": "2025-04-20T08:20:36Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.7",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "23a094f7f890a6c9d8fd768cf7288a4d30460973",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/23a094f7f890a6c9d8fd768cf7288a4d30460973"
@@ -1336,6 +1416,11 @@
       "labels": [],
       "published_at": "2025-04-20T02:39:16Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.6",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "5cf189ba29ea2d962d67634403a7638d546e6bf5",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/5cf189ba29ea2d962d67634403a7638d546e6bf5"
@@ -1422,6 +1507,11 @@
       "labels": [],
       "published_at": "2025-04-19T09:05:18Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.5",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "a5442acdfc72985b98adfba14d622dd19b108020",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/a5442acdfc72985b98adfba14d622dd19b108020"
@@ -1508,6 +1598,11 @@
       "labels": [],
       "published_at": "2025-04-19T07:03:23Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.4",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "c5f1f931eda54726b72fb396c3f78f73f0c45bf5",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/c5f1f931eda54726b72fb396c3f78f73f0c45bf5"
@@ -1594,6 +1689,11 @@
       "labels": [],
       "published_at": "2025-04-15T14:32:46Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.3",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "1bc25e0725b042a116fe9699c6d958082c17c9ce",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/1bc25e0725b042a116fe9699c6d958082c17c9ce"
@@ -1680,6 +1780,11 @@
       "labels": [],
       "published_at": "2025-04-15T13:49:10Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.2",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "542d1493b67692e4e4d7dcf514de3956e9459583",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/542d1493b67692e4e4d7dcf514de3956e9459583"
@@ -1766,6 +1871,11 @@
       "labels": [],
       "published_at": "2025-04-15T10:36:42Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.4.1",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "5900f8113e91da5a1ad90a0c089bd87d4e28c5ea",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/5900f8113e91da5a1ad90a0c089bd87d4e28c5ea"
@@ -1852,6 +1962,11 @@
       "labels": [],
       "published_at": "2025-01-23T04:21:09Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.3.3",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "946f9d1aa45cc27388e38f5aac8f0d530d6ba6de",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/946f9d1aa45cc27388e38f5aac8f0d530d6ba6de"
@@ -1924,6 +2039,11 @@
       "labels": [],
       "published_at": "2025-01-11T12:20:17Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.3.2",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "c841a27c264a1e04f15bbbf882f352c7ed4e700c",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/c841a27c264a1e04f15bbbf882f352c7ed4e700c"
@@ -1996,6 +2116,11 @@
       "labels": [],
       "published_at": "2025-01-02T15:10:29Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.3.1",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "d3a7c269a795edc427b92beeea05b0353df768c2",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/d3a7c269a795edc427b92beeea05b0353df768c2"
@@ -2068,6 +2193,11 @@
       "labels": [],
       "published_at": "2025-01-02T14:36:39Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.3.0",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "1ae2c45de48ea3f97775ef5ca349d85728853615",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/1ae2c45de48ea3f97775ef5ca349d85728853615"
@@ -2140,6 +2270,11 @@
       "labels": [],
       "published_at": "2024-12-04T07:39:30Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.32",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "54311c85e05a39f31d15a257de5d9dd9011bd96e",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/54311c85e05a39f31d15a257de5d9dd9011bd96e"
@@ -2212,6 +2347,11 @@
       "labels": [],
       "published_at": "2024-11-10T17:49:05Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.31",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "195a59841c63c0f64a791a3d1051227f7078c559",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/195a59841c63c0f64a791a3d1051227f7078c559"
@@ -2291,6 +2431,11 @@
       "labels": [],
       "published_at": "2024-10-22T16:29:20Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.30",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "01cac551f8b04dfaa18df70404da20713224c86c",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/01cac551f8b04dfaa18df70404da20713224c86c"
@@ -2370,6 +2515,11 @@
       "labels": [],
       "published_at": "2024-09-18T01:03:05Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.29",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "9b48b92e710633c5655a9d511ba6cf7e5ee1f502",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/9b48b92e710633c5655a9d511ba6cf7e5ee1f502"
@@ -2449,6 +2599,11 @@
       "labels": [],
       "published_at": "2024-09-17T09:38:43Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.28",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "742ed4d4d4d0ded480a773fd7920dd7b6f35eeea",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/742ed4d4d4d0ded480a773fd7920dd7b6f35eeea"
@@ -2528,6 +2683,11 @@
       "labels": [],
       "published_at": "2024-09-17T08:52:55Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.27",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "a2a80639cf474d61202044848414eeccc36a985b",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/a2a80639cf474d61202044848414eeccc36a985b"
@@ -2607,6 +2767,11 @@
       "labels": [],
       "published_at": "2024-09-17T07:12:36Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.26",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "0d1d97ec9175d3b565e6ffe060de0c10e4d91aab",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/0d1d97ec9175d3b565e6ffe060de0c10e4d91aab"
@@ -2686,6 +2851,11 @@
       "labels": [],
       "published_at": "2024-08-30T05:18:24Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.23",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "16fa5a67c2ec4260ebd44cbac65366c0583d3ce2",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/16fa5a67c2ec4260ebd44cbac65366c0583d3ce2"
@@ -2765,6 +2935,11 @@
       "labels": [],
       "published_at": "2024-08-02T10:00:21Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.22",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "9ba517f20e74cbc6d67b7ccb95af6524f801d494",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/9ba517f20e74cbc6d67b7ccb95af6524f801d494"
@@ -2844,6 +3019,11 @@
       "labels": [],
       "published_at": "2024-07-29T07:18:58Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.21",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "ec11b3f141de6c48eea31395edb54c0709b5219b",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/ec11b3f141de6c48eea31395edb54c0709b5219b"
@@ -2923,6 +3103,11 @@
       "labels": [],
       "published_at": "2024-07-28T15:39:56Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.20",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "c822ce0f51add5a9e8a9f3f39d9f9e9250f73c2e",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/c822ce0f51add5a9e8a9f3f39d9f9e9250f73c2e"
@@ -2988,6 +3173,11 @@
       "labels": [],
       "published_at": "2024-07-18T09:44:41Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.17",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "dbc4d729b7fc385adf8d9ce6947f2a7bd81f6d4a",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/dbc4d729b7fc385adf8d9ce6947f2a7bd81f6d4a"
@@ -3067,6 +3257,11 @@
       "labels": [],
       "published_at": "2024-05-31T02:48:19Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.15",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "a2214be9d814e8a147e805093b070460b608fc41",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/a2214be9d814e8a147e805093b070460b608fc41"
@@ -3146,6 +3341,11 @@
       "labels": [],
       "published_at": "2024-05-29T13:05:35Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.14",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "ce5af7e616344c0a325743778663ce241d292538",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/ce5af7e616344c0a325743778663ce241d292538"
@@ -3225,6 +3425,11 @@
       "labels": [],
       "published_at": "2024-05-29T12:50:39Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.13",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "1d9746b60fb0a5d02bf10fed68bda48aecd47b23",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/1d9746b60fb0a5d02bf10fed68bda48aecd47b23"
@@ -3304,6 +3509,11 @@
       "labels": [],
       "published_at": "2024-05-29T12:46:56Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.12",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "3d6b387bdf4c3bf83d448c42538e825b3de78106",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/3d6b387bdf4c3bf83d448c42538e825b3de78106"
@@ -3355,6 +3565,11 @@
       "labels": [],
       "published_at": "2024-05-29T12:40:22Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.11",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "15fb79becb99d8bb56fd5049c16576f85ea14340",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/15fb79becb99d8bb56fd5049c16576f85ea14340"
@@ -3420,6 +3635,11 @@
       "labels": [],
       "published_at": "2024-05-28T08:05:08Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.10",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "5e64a38e8dfb2c25d6a983ef3e1710eacced2c21",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/5e64a38e8dfb2c25d6a983ef3e1710eacced2c21"
@@ -3492,6 +3712,11 @@
       "labels": [],
       "published_at": "2024-05-27T23:39:52Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.9",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "d78af55d96a6c258c5b75630768b5b49bf7a4947",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/d78af55d96a6c258c5b75630768b5b49bf7a4947"
@@ -3585,6 +3810,11 @@
       "labels": [],
       "published_at": "2024-05-27T22:58:33Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.8",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "53584498e4ac35886b0ecfa248c9a753b227ccc3",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/53584498e4ac35886b0ecfa248c9a753b227ccc3"
@@ -3636,6 +3866,11 @@
       "labels": [],
       "published_at": "2024-05-27T22:56:04Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.7",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "2d5498bdb8760ae3b7374ae9d99404e84ba6ddf1",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/2d5498bdb8760ae3b7374ae9d99404e84ba6ddf1"
@@ -3673,6 +3908,11 @@
       "labels": [],
       "published_at": "2024-04-25T15:36:30Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.6",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "cefd3c669209d16bed494539f834741e1525327a",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/cefd3c669209d16bed494539f834741e1525327a"
@@ -3766,6 +4006,11 @@
       "labels": [],
       "published_at": "2024-04-25T10:52:17Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.5",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "d93336c600f9b3dd9e0056f82cf5d37359d8c4e4",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/d93336c600f9b3dd9e0056f82cf5d37359d8c4e4"
@@ -3859,6 +4104,11 @@
       "labels": [],
       "published_at": "2024-04-12T08:31:29Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.4",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "2eed3f9514b809db1769e799f67a6ca46399855f",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/2eed3f9514b809db1769e799f67a6ca46399855f"
@@ -3952,6 +4202,11 @@
       "labels": [],
       "published_at": "2024-04-12T08:21:02Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.3",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "824627624e241ebb3eac01ae0557302f7f991ea3",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/824627624e241ebb3eac01ae0557302f7f991ea3"
@@ -4024,6 +4279,11 @@
       "labels": [],
       "published_at": "2024-04-09T07:42:32Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.2",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "57e24c78ba5a7aa255e9798041af5b48363ed804",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/57e24c78ba5a7aa255e9798041af5b48363ed804"
@@ -4089,6 +4349,11 @@
       "labels": [],
       "published_at": "2024-04-08T17:37:58Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.2.1",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "a04e899cbe8b840da5c6c74c415ce2680e50d3fc",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/a04e899cbe8b840da5c6c74c415ce2680e50d3fc"
@@ -4140,6 +4405,11 @@
       "labels": [],
       "published_at": "2023-12-09T12:39:37Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.11",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "0de8ba41eeb59a210317fe519d4fae9f209134bd",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/0de8ba41eeb59a210317fe519d4fae9f209134bd"
@@ -4198,6 +4468,11 @@
       "labels": [],
       "published_at": "2023-11-07T07:03:21Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.8",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "cc6b22afbd274be4c27207387b58e169dacbf833",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/cc6b22afbd274be4c27207387b58e169dacbf833"
@@ -4256,6 +4531,11 @@
       "labels": [],
       "published_at": "2023-10-09T09:01:58Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.6",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "312801fb135ad7b62e3d86d14f60a773b3369d9c",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/312801fb135ad7b62e3d86d14f60a773b3369d9c"
@@ -4314,6 +4594,11 @@
       "labels": [],
       "published_at": "2023-08-15T14:36:16Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.5",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "42cb010236e5998a82093228242d6815db9a39ec",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/42cb010236e5998a82093228242d6815db9a39ec"
@@ -4372,6 +4657,11 @@
       "labels": [],
       "published_at": "2023-08-05T04:01:41Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.1.4",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "4ef34e0cbf5920384f3122b538b0a69a5b19faf3",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/4ef34e0cbf5920384f3122b538b0a69a5b19faf3"
@@ -4387,6 +4677,11 @@
       "labels": [],
       "published_at": "2023-08-05T04:17:12Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.4",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "95e22116dce7f46a3de9ebe256300414626bcf98",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/95e22116dce7f46a3de9ebe256300414626bcf98"
@@ -4445,6 +4740,11 @@
       "labels": [],
       "published_at": "2023-04-25T08:18:19Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/0.1.1",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "899ad46ae28b9c0cfd2fe23eb66c3c1e0540fed9",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/899ad46ae28b9c0cfd2fe23eb66c3c1e0540fed9"
@@ -4460,6 +4760,11 @@
       "labels": [],
       "published_at": "2023-04-25T10:09:33Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.2",
+      "author": {
+        "name": "Reverier-Xu",
+        "url": "https://github.com/Reverier-Xu",
+        "avatar_url": "https://avatars.githubusercontent.com/u/41937333?v=4"
+      },
       "commit": {
         "sha": "abce0ef5208dc656d44763252fe8f9ff48890d6f",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/abce0ef5208dc656d44763252fe8f9ff48890d6f"
@@ -4475,6 +4780,11 @@
       "labels": [],
       "published_at": "2023-04-21T22:44:23Z",
       "detail_url": "https://github.com/XDSEC/WebSocketReflectorX/releases/tag/wsrx-desktop-v0.1.0",
+      "author": {
+        "name": "github-actions",
+        "url": "https://github.com/apps/github-actions",
+        "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4"
+      },
       "commit": {
         "sha": "97df911ee829bc6ac87a3c25b657c35777159f69",
         "url": "https://github.com/XDSEC/WebSocketReflectorX/commit/97df911ee829bc6ac87a3c25b657c35777159f69"

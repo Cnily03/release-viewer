@@ -1,0 +1,23 @@
+---
+import type { Release } from "@/config";
+import FileBrief from "./FileBrief.astro";
+import FileView from "./FileView.astro";
+import type { HTMLAttributes } from "astro/types";
+
+export interface Props extends HTMLAttributes<"div"> {
+  repoUrl?: string;
+  release: Release;
+  defaultOpen?: boolean;
+  hiddenMeta?: boolean;
+}
+const { release, repoUrl, defaultOpen, hiddenMeta, ...rest } = Astro.props;
+---
+
+<div class:list={["flex flex-col md:flex-row my-5", rest.class]} {...rest}>
+  <div class="w-full md:w-2/11">
+    <FileBrief repoUrl={repoUrl} release={release!} />
+  </div>
+  <div class="w-full md:w-9/11">
+    <FileView repoUrl={repoUrl} release={release} defaultOpen={defaultOpen} hiddenMeta={hiddenMeta} />
+  </div>
+</div>

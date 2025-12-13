@@ -1,0 +1,67 @@
+---
+import type { Release } from "@/config";
+import { fmtDate } from "@/scripts/format";
+import Show from "./Show.astro";
+import clsx from "clsx";
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  repoUrl?: string;
+  release: Release;
+}
+
+const { release, repoUrl } = Astro.props;
+---
+
+<div class="w-full md:pt-6 md:pr-10 mb-3 md:mb-0">
+  <div class="mb-2 mr-3 md:mr-0 pt-1 sm:pt-0">
+    <span title={fmtDate(release.published_at, true)}>{fmtDate(release.published_at)}</span>
+  </div>
+  <div
+    class={clsx(
+      "flex flex-row flex-wrap md:flex-col gh-theme text-(--fgColor-muted) text-sm",
+      "*:mr-3 md:*:mr-0 md:*:mb-2 *:pt-1 sm:*:pt-0 **:align-middle"
+    )}
+  >
+    <Show when={release.author}>
+      <span class="*:inline">
+        <img
+          src={release.author!.avatar_url}
+          alt={release.author!.name}
+          width={20}
+          height={20}
+          class="inline-block rounded-xs shadow-theme-text/15 shadow-[0_0_0_1px] align-middle"
+        />
+        <a
+          class="ml-1 hover:underline"
+          href={release.author!.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          set:text={release.author!.name}
+        />
+      </span>
+    </Show>
+    <a
+      class={clsx("*:inline", repoUrl && "gh-theme hover:text-(--fgColor-accent)")}
+      {...repoUrl && {
+        href: `${repoUrl}/tree/${release.tag_name}`,
+        target: "_blank",
+        rel: "noopener noreferrer"
+      }}
+    >
+      <Icon name="octicon:tag-16" width={16} height={16} />
+      <span class="ml-1">{release.tag_name}</span>
+    </a>
+    <Show when={release.commit}>
+      <a
+        class="*:inline gh-theme hover:text-(--fgColor-accent)"
+        href={release.commit!.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Icon name="octicon:git-commit-16" width={16} height={16} />
+        <code class="ml-1">{release.commit!.sha.slice(0, 7)}</code>
+      </a>
+    </Show>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+---
+export interface Props {
+  when?: any;
+}
+
+const { when = true } = Astro.props;
+---
+
+{Boolean(when) ? <slot /> : <slot name="fallback" />}
