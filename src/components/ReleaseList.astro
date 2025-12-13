@@ -129,7 +129,8 @@ const { list, ...rest } = Astro.props;
 </div>
 
 <style scoped>
-  @reference "../styles/global.css";
+  @reference "@/styles/global.css";
+
   .list-item {
     @apply flex flex-row items-center border-t border-solid px-4 py-2 m-0;
     @apply border-t-(--borderColor-default);
