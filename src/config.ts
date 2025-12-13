@@ -4,7 +4,7 @@ import path from "node:path";
 export interface ReleaseAsset {
   name: string;
   size: number;
-  digest: string;
+  digest: string | null;
   download_url: string;
   updated_at: string;
 }

@@ -1,4 +1,5 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: type is too long */
+#!/usr/bin/env -S bun
+/** biome-ignore-all lint/suspicious/noExplicitAny: type is too complex */
 
 import fs from "node:fs";
 import path from "node:path";
@@ -222,7 +223,8 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   if (!repoResponse.ok) {
     const errMsg = await repoResponse.text().catch(() => "");
     logger.error(
-      `Failed to fetch repository data for ${repoFullname}: ${Logger.ANSI_BOLD}${repoResponse.status} ${repoResponse.statusText}${Logger.ANSI_RESET}:`,
+      `Failed to fetch repository data for ${repoFullname}:`,
+      `${Logger.ANSI_BOLD}${repoResponse.status} ${repoResponse.statusText}${Logger.ANSI_RESET}:`,
       errMsg
         ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
             .split("\n")
@@ -249,7 +251,17 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
       .info(`Fetching releases data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
     const releasesResponse = await api.fetch(`${API_URL.releases}?page=${page}`);
     if (!releasesResponse.ok) {
-      logger.error(`Failed to fetch releases data for ${repoFullname}`);
+      const errMsg = await releasesResponse.text().catch(() => "");
+      logger.error(
+        `Failed to fetch releases data for ${repoFullname}:`,
+        `${Logger.ANSI_BOLD}${releasesResponse.status} ${releasesResponse.statusText}${Logger.ANSI_RESET}:`,
+        errMsg
+          ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
+              .split("\n")
+              .map((l) => `${" ".repeat(28)}${l}`)
+              .join("\n")}`
+          : ""
+      );
       process.exit(1);
     }
     const releasesPageData = await releasesResponse.json();
@@ -270,34 +282,48 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   // tags data
   const tagsData: any[] = [];
   page = 1;
-  logger.info("Fetching tags data...");
-  while (true) {
-    logger
-      .prevLine()
-      .cleanLine()
-      .info(`Fetching tags data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
-    const tagsResponse = await api.fetch(`${API_URL.tags}?page=${page}`);
-    if (!tagsResponse.ok) {
-      logger.error(`Failed to fetch tags data for ${repoFullname}`);
-      process.exit(1);
-    }
-    const tagsPageData = await tagsResponse.json();
-    if (tagsPageData.length === 0) {
-      break;
-    }
-    // only keep tags that are in releases
-    for (const tag of tagsPageData) {
-      if (tagSet.has(tag.name)) {
-        tagsData.push(tag);
-        tagSet.delete(tag.name);
+  if (releasesData.length > 0) {
+    logger.info("Fetching tags data...");
+    while (true) {
+      logger
+        .prevLine()
+        .cleanLine()
+        .info(`Fetching tags data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
+      const tagsResponse = await api.fetch(`${API_URL.tags}?page=${page}`);
+      if (!tagsResponse.ok) {
+        const errMsg = await tagsResponse.text().catch(() => "");
+        logger.error(
+          `Failed to fetch tags data for ${repoFullname}:`,
+          `${Logger.ANSI_BOLD}${tagsResponse.status} ${tagsResponse.statusText}${Logger.ANSI_RESET}:`,
+          errMsg
+            ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
+                .split("\n")
+                .map((l) => `${" ".repeat(28)}${l}`)
+                .join("\n")}`
+            : ""
+        );
+        process.exit(1);
+      }
+      const tagsPageData = await tagsResponse.json();
+      if (tagsPageData.length === 0) {
+        break;
+      }
+      // only keep tags that are in releases
+      for (const tag of tagsPageData) {
+        if (tagSet.has(tag.name)) {
+          tagsData.push(tag);
+          tagSet.delete(tag.name);
+        }
+      }
+      page += 1;
+      if (tagSet.size === 0) {
+        break;
       }
     }
-    page += 1;
-    if (tagSet.size === 0) {
-      break;
-    }
+    logger.prevLine().cleanLine().success(`Fetched tags data.`);
+  } else {
+    logger.success(`No releases to fetch tags for, skipping.`);
   }
-  logger.prevLine().cleanLine().success(`Fetched tags data.`);
   if (tagSet.size > 0) {
     logger.warn(
       `Some tags in releases are not found in tags API: ${Array.from(tagSet)
@@ -328,7 +354,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   };
 
   if (releasesData.length === 0) {
-    logger.error(`No releases found for ${repoFullname}, aborting.`);
+    logger.warn(`No releases found for ${Logger.ANSI_CYAN}${repoFullname}${Logger.ANSI_RESET}, aborting.`);
     return config;
   }
 
@@ -491,7 +517,7 @@ async function main() {
   });
   logger.success("Generation completed.");
   // write to file
-  logger.info("Writing to config.json...");
+  logger.info("Writing to file...");
   if (args.outputFile) {
     fs.writeFileSync(args.outputFile, JSON.stringify(resultConfig, null, 2));
     logger.success(`Saved at ${Logger.ANSI_BLUE}${outputFilePath}${Logger.ANSI_RESET}`);
@@ -503,4 +529,6 @@ async function main() {
   }
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
