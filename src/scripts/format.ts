@@ -26,8 +26,11 @@ export function fmtLocalRelatedDate(d: number | string | Date): string {
   const now = new Date();
   const deltaMs = now.getTime() - date.getTime();
   const deltaSec = Math.floor(deltaMs / 1000);
-  if (deltaSec < 60) {
+  if (deltaSec < 10) {
     return "now";
+  }
+  if (deltaSec < 60) {
+    return `${deltaSec} second${deltaSec === 1 ? "" : "s"} ago`;
   }
   const deltaMin = Math.floor(deltaSec / 60);
   if (deltaMin < 60) {
@@ -45,35 +48,65 @@ export function fmtLocalRelatedDate(d: number | string | Date): string {
   if (deltaWeeks < 4) {
     return `${deltaWeeks} week${deltaWeeks === 1 ? "" : "s"} ago`;
   }
-  return fmtDate(date);
+  return ""; // return empty string to detect whether to use absolute date
 }
 
-export function bindLocalRelatedDateUpdate(selector: string | NodeListOf<Element>, interval: number = 60000) {
+export function bindLocalRelatedDateUpdate(selector: string | NodeListOf<Element>) {
   const els = typeof selector === "string" ? document.querySelectorAll(selector) : selector;
   const pools = new Set([...els]);
+  const secondsPools = new Set<Element>();
+
+  function updateEl(el: Element) {
+    // if (!el) return;
+    const datetime = el.getAttribute("data-datetime");
+    const d = new Date(datetime ?? "");
+    if (!datetime || Number.isNaN(d.getTime())) {
+      pools.delete(el);
+      return;
+    }
+    const related = fmtLocalRelatedDate(d);
+    if (!related) {
+      pools.delete(el);
+      const abs = fmtDate(d);
+      el.textContent = abs; // set absolute date
+      return abs;
+    }
+    el.textContent = related; // set related date
+    return related;
+  }
   function update() {
     for (const el of pools) {
-      const datetime = el.getAttribute("data-datetime");
-      if (!datetime) {
-        pools.delete(el);
-        continue;
-      }
-      const d = new Date(datetime);
-      if (Number.isNaN(d.getTime())) {
-        pools.delete(el);
-        continue;
-      }
-      const original = el.textContent.trim();
-      const related = fmtLocalRelatedDate(d).trim();
-      if (original !== related) {
-        pools.delete(el);
-        el.textContent = related;
-        continue;
-      }
-      el.textContent = related;
+      updateEl(el);
     }
   }
-  const timeout = setInterval(update, interval);
+
+  const lowerThanOneMinute = (s?: string) => {
+    return s?.includes("now") || s?.includes("second");
+  };
+
+  const secTimeout = setInterval(() => {
+    for (const el of secondsPools) {
+      const t = updateEl(el);
+      if (!lowerThanOneMinute(t)) {
+        secondsPools.delete(el);
+      }
+    }
+    if (secondsPools.size === 0) {
+      clearInterval(secTimeout);
+    }
+  }, 500);
+  // instant update, and classify seconds pools
+  for (const el of pools) {
+    const t = updateEl(el);
+    if (lowerThanOneMinute(t)) {
+      secondsPools.add(el);
+    }
+  }
+
+  // when focused, update immediately
+  window.addEventListener("focus", update);
+
+  const timeout = setInterval(update, 20 * 1000);
   return timeout;
 }
 
