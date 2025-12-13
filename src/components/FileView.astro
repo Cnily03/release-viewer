@@ -49,30 +49,28 @@ function processReleaseBody(body: string, repoUrl?: string) {
 
 const html = await md.render(processReleaseBody(release.body, repoUrl));
 
+const sourceCodeAssets = [
+  {
+    name: "Source code (tar.gz)",
+    download_url: release.tar_url,
+    size: 0,
+    updated_at: release.published_at,
+    digest: ""
+  },
+  {
+    name: "Source code (zip)",
+    download_url: release.zip_url,
+    size: 0,
+    updated_at: release.published_at,
+    digest: ""
+  }
+];
+
 const assetsWithSourceCode = release.assets
   .map(asset => [asset, "artifact"] as [ReleaseAsset, "artifact" | "source"])
-  .concat([
-    [
-      {
-        name: "Source code (tar.gz)",
-        download_url: release.tar_url,
-        size: 0,
-        updated_at: release.published_at,
-        digest: ""
-      },
-      "source"
-    ] as const,
-    [
-      {
-        name: "Source code (zip)",
-        download_url: release.zip_url,
-        size: 0,
-        updated_at: release.published_at,
-        digest: ""
-      },
-      "source"
-    ] as const
-  ]);
+  .concat(
+    sourceCodeAssets.filter(t => !!t.download_url).map(t => [t, "source"] as [ReleaseAsset, "artifact" | "source"])
+  );
 ---
 
 <div class="w-full border rounded-lg gh-theme border-(--borderColor-default)">
@@ -185,14 +183,13 @@ const assetsWithSourceCode = release.assets
                     rel="noopener noreferrer"
                     class="ml-2 gh-theme text-(--fgColor-accent) truncate pr-2 hover:underline"
                   >
-                    {t === "artifact" ? (
-                      <span class="font-medium">{asset.name}</span>
-                    ) : (
-                      <>
-                        <span class="font-medium">{asset.name.replace(/\s*\(.+\)$/, "")}</span>
-                        <span>{asset.name.match(/(\(.+\))$/)?.[1]}</span>
-                      </>
-                    )}
+                    <Show when={t === "source"}>
+                      <span class="font-medium" slot="fallback">
+                        {asset.name}
+                      </span>
+                      <span class="font-medium">{asset.name.replace(/\s*\(.+\)$/, "")}</span>
+                      <span>{asset.name.match(/(\(.+\))$/)?.[1]}</span>
+                    </Show>
                   </a>
                 </div>
                 <div class={clsx("flex flex-row justify-end items-center truncate", "w-full md:w-1/2 lg:w-1/2")}>
@@ -203,18 +200,16 @@ const assetsWithSourceCode = release.assets
                         "hidden min-w-xs:flex md:hidden lg:flex"
                       )}
                     >
-                      {t === "artifact" && asset.digest && (
-                        <>
-                          <span class="flex-1 whitespace-nowrap truncate">{asset.digest}</span>
-                          <Copy
-                            copyText={asset.digest}
-                            class:list="inline-flex rounded-md w-7 h-7 items-center justify-center hover:bg-theme-text/10"
-                          >
-                            <Icon name="octicon:check-16" width={16} height={16} class="text-success" slot="when-ok" />
-                            <Icon name="octicon:copy-16" width={16} height={16} />
-                          </Copy>
-                        </>
-                      )}
+                      <Show when={t === "artifact" && asset.digest}>
+                        <span class="flex-1 whitespace-nowrap truncate">{asset.digest}</span>
+                        <Copy
+                          copyText={asset.digest}
+                          class:list="inline-flex rounded-md w-7 h-7 items-center justify-center hover:bg-theme-text/10"
+                        >
+                          <Icon name="octicon:check-16" width={16} height={16} class="text-success" slot="when-ok" />
+                          <Icon name="octicon:copy-16" width={16} height={16} />
+                        </Copy>
+                      </Show>
                     </div>
                   </span>
                   <span
