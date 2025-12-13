@@ -426,10 +426,11 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     if (match) {
       const major = match[1]!;
       const minor = match[2] ? match[2].substring(1)! : null;
-      if (!versions.has(major)) {
+      // do not overwrite release tags
+      if (!versions.has(major) && !releaseTags.has(tagname)) {
         versions.set(major, tagname);
       }
-      if (minor && !versions.has(`${major}.${minor}`)) {
+      if (minor && !versions.has(`${major}.${minor}`) && !releaseTags.has(tagname)) {
         versions.set(`${major}.${minor}`, tagname);
       }
     }
