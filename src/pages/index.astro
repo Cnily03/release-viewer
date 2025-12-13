@@ -2,8 +2,20 @@
 import config from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import FileContainer from "@/components/FileContainer.astro";
+import Intro from "@/components/Intro.astro";
 ---
 
 <Layout title={config.name} class:list="p-8">
+  <div class="max-w-3xl mx-auto">
+    <Intro
+      name={config.name}
+      description={config.description}
+      repoFullname={config.repo_fullname}
+      repoUrl={config.repo_url}
+      avatarUrl={config.avatar_url}
+      labels={config.labels}
+      license={config.license}
+    />
+  </div>
   <FileContainer repoUrl={config.repo_url} release={config.releases[10]!} defaultOpen />
 </Layout>

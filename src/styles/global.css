@@ -34,8 +34,14 @@ body {
   --color-danger: oklch(0.55 0.2346 29.12);
 }
 
-.tag {
-  @apply inline-block px-2 py-0.5 text-sm rounded-full border;
+@layer utilities {
+  .tag {
+    @apply inline-block px-2 py-0.5 text-sm rounded-full;
+  }
+  .break-word {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
 }
 
 @custom-variant hover (&:hover);

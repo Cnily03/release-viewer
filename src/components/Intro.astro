@@ -1,0 +1,88 @@
+---
+import { Icon } from "astro-icon/components";
+import Show from "./Show.astro";
+import type { HTMLAttributes } from "astro/types";
+import clsx from "clsx";
+import Tag from "./Tag.astro";
+
+export interface Props extends HTMLAttributes<"div"> {
+  name: string;
+  description: string;
+  repoFullname?: string;
+  repoUrl?: string;
+  avatarUrl?: string;
+  labels?: string[];
+  license?: string;
+}
+
+const { name, description, repoFullname, repoUrl, avatarUrl, labels = [], license, ...rest } = Astro.props;
+---
+
+<div class:list={["w-full flex flex-col *:mb-2", rest.class]} {...rest}>
+  <div class="flex flex-row items-start flex-wrap gap-x-2 gap-y-1" data-role="intro-header">
+    <div class="flex flex-col gap-y-2 break-word">
+      <div class="flex flex-row items-center justify-start" data-role="intro-title">
+        <Show when={avatarUrl}>
+          <img
+            src={avatarUrl}
+            alt={repoFullname || name}
+            width={32}
+            height={32}
+            class="rounded-sm bg-theme-text/10 shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-3"
+          />
+        </Show>
+        <h1 class="text-2xl font-semibold">{repoFullname || name}</h1>
+      </div>
+      <div class="text-xs" data-role="intro-mirror">
+        <Show when={repoFullname || repoUrl}>
+          <span slot="fallback">Mirror from releases of {repoFullname || name}</span>
+          <span>Mirror from releases of</span>
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="gh-theme text-(--fgColor-accent) hover:underline underline-offset-[0.2rem]"
+            set:text={repoFullname || name}
+          />
+        </Show>
+      </div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="inline-flex justify-center items-center w-8 h-8">
+      <a
+        class={clsx("gh-theme text-(--fgColor-muted)", repoUrl && "hover:text-(--fgColor-accent)")}
+        {...repoUrl && {
+          href: repoUrl,
+          target: "_blank",
+          rel: "noopener noreferrer"
+        }}><Icon name="octicon:repo-16" width={24} height={24} /></a
+      >
+    </div>
+  </div>
+  <div class="border-t border-solid gh-theme border-(--borderColor-default)" data-role="intro-splitter"></div>
+  <div class="space-y-2" data-role="intro-body">
+    <div>{description}</div>
+    <div class="space-x-2">
+      {
+        labels.map(label => {
+          return (
+            <Tag type="primary" variant="bg">
+              {label}
+            </Tag>
+          );
+        })
+      }
+    </div>
+  </div>
+  <div
+    class="flex flex-row flex-wrap gh-theme text-(--fgColor-muted) text-sm *:mr-2 **:align-middle"
+    data-role="instro-footer"
+  >
+    <span class="*:inline">
+      <Show when={license}>
+        <Icon name="octicon:law-16" width={16} height={16} />
+        <span class="ml-1">{license}</span>
+      </Show>
+    </span>
+  </div>
+</div>

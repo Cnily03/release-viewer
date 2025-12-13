@@ -18,7 +18,7 @@ export interface Release {
   author?: {
     name: string;
     url: string;
-    avatar_url: string;
+    avatar_url?: string;
   };
   commit?: {
     sha: string;
@@ -32,7 +32,12 @@ export interface Release {
 
 export interface Config {
   name: string;
+  description: string;
+  repo_fullname: string;
   repo_url: string;
+  avatar_url?: string;
+  labels: string[];
+  license?: string;
   redirect: Record<string, string>;
   releases: Release[];
 }

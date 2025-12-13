@@ -2,14 +2,16 @@
 import type { HTMLAttributes } from "astro/types";
 
 export interface Props extends HTMLAttributes<"span"> {
-  variant?: "success" | "primary" | "warning" | "danger" | "info";
+  type?: "success" | "primary" | "warning" | "danger" | "info";
+  variant?: "border" | "text" | "bg";
 }
 
-const { variant: _, ...rest } = Astro.props;
+const { type: _, variant: __, ...rest } = Astro.props;
 
-const variant = Astro.props.variant ?? "info";
+const type = Astro.props.type ?? "info";
+const variant = Astro.props.variant ?? "border";
 
-const borderColors: Record<NonNullable<Props["variant"]>, string> = {
+const borderColors: Record<NonNullable<Props["type"]>, string> = {
   success: "border-success",
   primary: "border-primary",
   warning: "border-warning",
@@ -17,7 +19,15 @@ const borderColors: Record<NonNullable<Props["variant"]>, string> = {
   info: "border-theme-text/65"
 };
 
-const textColors: Record<NonNullable<Props["variant"]>, string> = {
+const bgColors: Record<NonNullable<Props["type"]>, string> = {
+  success: "bg-success/10",
+  primary: "bg-primary/10",
+  warning: "bg-warning/10",
+  danger: "bg-danger/10",
+  info: "bg-theme-text/10"
+};
+
+const textColors: Record<NonNullable<Props["type"]>, string> = {
   success: "text-success",
   primary: "text-primary",
   warning: "text-warning",
@@ -26,6 +36,15 @@ const textColors: Record<NonNullable<Props["variant"]>, string> = {
 };
 ---
 
-<span class:list={["tag", borderColors[variant], textColors[variant], rest.class]} {...rest}>
+<span
+  class:list={[
+    "tag",
+    variant === "bg" && bgColors[type],
+    variant === "border" && `border ${borderColors[type]}`,
+    textColors[type],
+    rest.class
+  ]}
+  {...rest}
+>
   <slot />
 </span>

@@ -16,7 +16,7 @@ export interface Props {
   hiddenMeta?: boolean;
 }
 
-const labelVariantMap: Record<string, TagProps["variant"]> = {
+const labelVariantMap: Record<string, TagProps["type"]> = {
   latest: "success",
   prerelease: "warning"
 };
@@ -79,7 +79,7 @@ const assetsWithSourceCode = release.assets
       <div class="mb-3 flex-1">
         <h1 class="inline text-[2rem] font-medium mr-3">{release.name}</h1>
         <span class="inline-block align-text-bottom">
-          {release.labels.map(label => <Tag variant={labelVariant[label]}>{label}</Tag>)}
+          {release.labels.map(label => <Tag type={labelVariant[label]}>{label}</Tag>)}
         </span>
       </div>
     </div>
@@ -94,19 +94,21 @@ const assetsWithSourceCode = release.assets
         >
           <Show when={release.author}>
             <span class="*:inline">
-              <img
-                src={release.author!.avatar_url}
-                alt={release.author!.name}
-                width={20}
-                height={20}
-                class="inline-block rounded-xs shadow-theme-text/15 shadow-[0_0_0_1px] align-middle"
-              />
+              <Show when={release.author?.avatar_url}>
+                <img
+                  src={release.author!.avatar_url}
+                  alt={release.author!.name}
+                  width={20}
+                  height={20}
+                  class="inline-block rounded-xs bg-theme-text/10 shadow-theme-text/15 shadow-[0_0_0_1px] align-middle mr-1"
+                />
+              </Show>
               <a
-                class="ml-1 font-semibold hover:underline"
+                class="font-semibold hover:underline"
                 href={release.author!.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                set:text={release.author!.name}
+                set:text={`${release.author?.avatar_url ? "" : "@"}${release.author!.name}`}
               />
               <span>released this</span>
               <span title={fmtDate(release.published_at, true)}>{fmtDate(release.published_at)}</span>
