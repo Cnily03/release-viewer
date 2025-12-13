@@ -43,6 +43,13 @@ const { list, ...rest } = Astro.props;
   <ul
     class="list-none w-full border rounded-lg space-y-3 border-solid gh-theme border-(--borderColor-default) *:first:border-t-0! text-sm"
   >
+    <Show when={list.length === 0}>
+      <li
+        class="list-item flex-wrap md:flex-nowrap justify-center py-6! text-lg! font-medium! gh-theme text-(--fgColor-muted)"
+      >
+        No releases found.
+      </li>
+    </Show>
     {
       list.map(item => {
         const labels = item.labels || [];
