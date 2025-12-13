@@ -25,7 +25,7 @@ export function fmtLocalRelatedDate(d: number | string | Date): string {
   const date = new Date(d);
   const now = new Date();
   const deltaMs = now.getTime() - date.getTime();
-  const deltaSec = Math.floor(deltaMs / 1000);
+  const deltaSec = Math.round(deltaMs / 1000);
   if (deltaSec < 10) {
     return "now";
   }
@@ -33,18 +33,18 @@ export function fmtLocalRelatedDate(d: number | string | Date): string {
     return `${deltaSec} second${deltaSec === 1 ? "" : "s"} ago`;
   }
   const deltaMin = Math.floor(deltaSec / 60);
-  if (deltaMin < 60) {
+  if (deltaMin < 50) {
     return `${deltaMin} minute${deltaMin === 1 ? "" : "s"} ago`;
   }
-  const deltaHrs = Math.floor(deltaMin / 60);
+  const deltaHrs = Math.round(deltaMin / 60);
   if (deltaHrs < 24) {
     return `${deltaHrs} hour${deltaHrs === 1 ? "" : "s"} ago`;
   }
-  const deltaDays = Math.floor(deltaHrs / 24);
+  const deltaDays = Math.round(deltaHrs / 24);
   if (deltaDays < 7) {
     return `${deltaDays} day${deltaDays === 1 ? "" : "s"} ago`;
   }
-  const deltaWeeks = Math.floor(deltaDays / 7);
+  const deltaWeeks = Math.round(deltaDays / 7);
   if (deltaWeeks < 4) {
     return `${deltaWeeks} week${deltaWeeks === 1 ? "" : "s"} ago`;
   }
