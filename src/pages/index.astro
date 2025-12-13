@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import FileContainer from "@/components/FileContainer.astro";
 import Intro from "@/components/Intro.astro";
 import ReleaseList, { type ReleaseListItem } from "@/components/ReleaseList.astro";
+import BreadCrumb from "@/components/BreadCrumb.astro";
 
 const list: ReleaseListItem[] = config.releases.map(release => ({
   name: release.name,
@@ -19,7 +20,7 @@ const indexTags = new Set(config.index_tags);
 const indexReleases = config.releases.filter(rl => indexTags.has(rl.tag.name));
 ---
 
-<Layout title={config.name} class:list="p-8">
+<Layout title={config.name} class:list="py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-8">
   <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="intro">
     <Intro
       name={config.name}
@@ -32,6 +33,7 @@ const indexReleases = config.releases.filter(rl => indexTags.has(rl.tag.name));
     />
   </div>
   <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="list">
+    <BreadCrumb slug={[""]} />
     <ReleaseList list={list} />
   </div>
   <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="releases">

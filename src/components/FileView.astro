@@ -195,7 +195,7 @@ const assetsWithSourceCode = release.assets
                     <div
                       class={clsx(
                         "flex flex-row justify-end items-center text-end font-mono text-xs gh-theme text-(--fgColor-muted) truncate min-w-0 max-w-62.5",
-                        "hidden xs:flex md:hidden lg:flex"
+                        "hidden xs:flex sm:hidden md:hidden lg:flex"
                       )}
                     >
                       <Show when={t === "artifact" && asset.digest}>
@@ -212,16 +212,16 @@ const assetsWithSourceCode = release.assets
                   </span>
                   <span
                     class={clsx(
-                      "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
-                      "w-1/4 md:w-1/2 lg:w-1/4"
+                      "min-w-[clamp(50px,15vw,75px)] text-end shrink-0 gh-theme text-(--fgColor-muted) whitespace-nowrap",
+                      "md:w-1/2 lg:w-1/4 ml-2 sm:ml-4 md:ml-6"
                     )}
                   >
                     {t === "artifact" && fmtSize(asset.size)}
                   </span>
                   <span
                     class={clsx(
-                      "ml-2 min-w-[clamp(50px,15vw,75px)] text-end gh-theme text-(--fgColor-muted) whitespace-nowrap",
-                      "w-1/4 md:w-1/2 lg:w-1/4"
+                      "min-w-[clamp(50px,15vw,75px)] text-end shrink-0 gh-theme text-(--fgColor-muted) whitespace-nowrap",
+                      "md:w-1/2 lg:w-1/4 ml-2 sm:ml-4 md:ml-6"
                     )}
                     title={t === "artifact" ? fmtDate(asset.updated_at, true) : fmtDate(release.published_at, true)}
                     data-datetime={t === "artifact" ? asset.updated_at : release.published_at}

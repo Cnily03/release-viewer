@@ -1,0 +1,47 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+export interface Props extends HTMLAttributes<"nav"> {
+  slug: string[];
+}
+
+const { slug, ...rest } = Astro.props;
+---
+
+<nav class:list={["mb-8", rest.class]} {...rest}>
+  <ol class="bread-crumb gh-theme">
+    <li>
+      <a
+        href={import.meta.env.BASE_URL}
+        target="_self"
+        rel="noopener noreferrer"
+        class="gh-theme text-(--fgColor-accent) hover:underline"
+        set:text={"Releases"}
+      />
+    </li>
+    {
+      slug.map(part => (
+        <li>
+          <span>{part}</span>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style scoped>
+  @reference "@/styles/global.css";
+  .bread-crumb {
+    @apply text-sm space-x-0;
+  }
+  .bread-crumb > * {
+    @apply list-none inline-block text-[0px];
+  }
+
+  .bread-crumb > * * {
+    @apply text-sm;
+  }
+  .bread-crumb > *:not(:last-child)::after {
+    @apply inline-block text-sm content-[''] ml-[0.5em] mr-[0.15em] h-[0.8em] border-r-[0.1em] border-solid border-(--borderColor-emphasis) transform-[rotate(15deg)_translateY(0.0625em)];
+  }
+</style>

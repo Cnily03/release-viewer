@@ -1,0 +1,79 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { Release } from "@/config";
+import config from "@/config";
+import Show from "@/components/Show.astro";
+import Layout from "@/layouts/Layout.astro";
+import Intro from "@/components/Intro.astro";
+import FileView from "@/components/FileView.astro";
+import "@/styles/github-markdown.css";
+import BreadCrumb from "@/components/BreadCrumb.astro";
+
+interface Props {
+  slug: string[];
+  type: "view" | "redirect";
+  redirectTo?: string;
+  release?: Release;
+  repoUrl?: string;
+  [key: string]: unknown;
+}
+
+export const getStaticPaths = (async () => {
+  const repoUrl = config.repo_url;
+  const existingSlugs = new Set<string>();
+  const materials: Props[] = config.releases.map(release => {
+    existingSlugs.add(release.tag.name);
+    return {
+      slug: release.tag.name.split("/"),
+      type: "view",
+      release,
+      repoUrl
+    };
+  });
+  const redirects: Props[] = Object.entries(config.redirect)
+    .filter(([from, _]) => {
+      return !existingSlugs.has(from);
+    })
+    .map(([from, to]) => {
+      return {
+        slug: [from],
+        type: "redirect",
+        redirectTo: `${import.meta.env.BASE_URL.replace(/\/+$/g, "")}/${to}`
+      };
+    });
+  return [...materials, ...redirects].map(props => ({
+    params: {
+      slug: props.slug.join("/")
+    },
+    props
+  }));
+}) satisfies GetStaticPaths;
+
+const { slug, type, ...props } = Astro.props;
+---
+
+<Show when={type === "view"}>
+  <script is:inline slot="fallback" data-url={props.redirectTo}>
+    window.location.replace(document.currentScript.dataset.url);
+  </script>
+  <Layout
+    title={`${props.release?.name || slug.join("/")} - ${config.name}`}
+    class:list="py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-8"
+  >
+    <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="intro">
+      <Intro
+        name={config.name}
+        description={config.description}
+        repoFullname={config.repo_fullname}
+        repoUrl={config.repo_url}
+        avatarUrl={config.avatar_url}
+        labels={config.labels}
+        license={config.license}
+      />
+    </div>
+    <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="view">
+      <BreadCrumb slug={slug} />
+      <FileView repoUrl={props.repoUrl} release={props.release!} defaultOpen={true} />
+    </div>
+  </Layout>
+</Show>
