@@ -42,12 +42,19 @@ export function fmtLocalRelatedDate(d: number | string | Date): string {
   }
   const deltaDays = Math.round(deltaHrs / 24);
   if (deltaDays < 7) {
+    if (deltaDays === 1) return "yesterday";
     return `${deltaDays} day${deltaDays === 1 ? "" : "s"} ago`;
   }
   const deltaWeeks = Math.round(deltaDays / 7);
   if (deltaWeeks < 4) {
+    if (deltaWeeks === 1) return "last week";
     return `${deltaWeeks} week${deltaWeeks === 1 ? "" : "s"} ago`;
   }
+  // const deltaMonths = Math.round(deltaDays / 30);
+  // if (deltaMonths < 12) {
+  //   if (deltaMonths === 1) return "last month";
+  //   return `${deltaMonths} month${deltaMonths === 1 ? "" : "s"} ago`;
+  // }
   return ""; // return empty string to detect whether to use absolute date
 }
 
