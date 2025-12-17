@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { parseBuildArgs } from "@/arguments";
 
 export interface ReleaseAsset {
   name: string;
@@ -46,7 +47,9 @@ export interface Config {
   releases: Release[];
 }
 
-const filepath = path.resolve((process.argv.length > 3 && process.argv[3]) || "config.json");
+const buildArgs = parseBuildArgs();
+
+const filepath = path.resolve(buildArgs.configPath || "config.json");
 const time = new Date().toLocaleTimeString("en-US", { hour12: false });
 console.info(`\x1b[2m${time}\x1b[0m \x1b[34m[app]\x1b[0m Loading config from \x1b[34m${filepath}\x1b[0m`);
 

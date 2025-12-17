@@ -91,7 +91,7 @@ class Logger {
     }
     return this.stdout(`\x1b[${n}A`);
   }
-  cleanLine(stderr = false) {
+  clearLine(stderr = false) {
     if (stderr) {
       return this.stderr("\x1b[2K");
     }
@@ -142,10 +142,11 @@ class ApiFetcher {
 function usage() {
   console.log("Usage: ./generate.ts <repo_fullname> [...options]");
   console.log("Options:");
-  console.log("  -h, --help              Show this help message");
-  console.log("  -o, --output <file>     Output file");
-  console.log("  --token <token>         GitHub API token (or set GITHUB_TOKEN env variable)");
-  console.log("  --ignore-empty-assets   Ignore releases with no assets");
+  console.log("  -h, --help                        Show this help message");
+  console.log("  -o, --output <file>               Output file");
+  console.log("  --token <token>                   GitHub API token (or set GITHUB_TOKEN env variable)");
+  console.log("  --reduce <major[,minor[,patch]]>  Reduce releases to at most major/minor/patch releases");
+  console.log("  --ignore-empty-assets             Ignore releases with no assets");
 }
 
 function parseArgs() {
@@ -154,6 +155,7 @@ function parseArgs() {
   let repoFullname = "";
   let outputFile = "";
   let token = process.env.GITHUB_TOKEN || "";
+  const reduceArgs: (number | undefined)[] = [];
   let ignoreEmptyAssets = false;
   while (args.length > 0) {
     const arg = args.shift();
@@ -165,12 +167,49 @@ function parseArgs() {
         process.exit(0);
         break;
       case "--output":
-      case "-o":
-        outputFile = args.shift() || outputFile;
+      case "-o": {
+        const next = args.shift();
+        if (!next) {
+          console.error(
+            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing <file> argument for ${arg}, running with --help for help.`
+          );
+          process.exit(1);
+        }
+        outputFile = next || outputFile;
         break;
-      case "--token":
-        token = args.shift() || token;
+      }
+      case "--token": {
+        const next = args.shift();
+        if (!next) {
+          console.error(
+            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing <token> argument for ${arg}, running with --help for help.`
+          );
+          process.exit(1);
+        }
+        token = next || token;
         break;
+      }
+      case "--reduce": {
+        const next = args.shift();
+        if (!next) {
+          console.error(
+            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing argument for ${arg}, running with --help for help.`
+          );
+          process.exit(1);
+        }
+        const parts = next.split(",");
+        if (parts.length >= 1 && parts.every((n) => n === "*" || /^\d+$/.test(n))) {
+          for (const p of parts) {
+            reduceArgs.push(p === "*" ? undefined : parseInt(p, 10));
+          }
+        } else {
+          console.error(
+            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} invalid argument for ${arg}, running with --help for help.`
+          );
+          process.exit(1);
+        }
+        break;
+      }
       case "--ignore-empty-assets":
         ignoreEmptyAssets = true;
         break;
@@ -201,12 +240,128 @@ function parseArgs() {
     );
     process.exit(1);
   }
-  return { repoFullname, outputFile, token, ignoreEmptyAssets };
+  return { repoFullname, outputFile, token, ignoreEmptyAssets, reduceArgs };
+}
+
+function reduceReleaseTags(tags: Set<string>, maxEachMajor?: number, maxEachMinor?: number, maxEachPatch?: number) {
+  if (!maxEachMajor && !maxEachMinor && !maxEachPatch) {
+    return tags;
+  }
+  logger.info("Reducing releases...");
+  // major -> (minor -> [releases])
+  const vmap: Map<string, Map<string, string[]>> = new Map();
+  for (const tag of tags) {
+    const match = tag.match(/^v?(\d+)(\.(\d+))?/);
+    if (match) {
+      const major = match[1]!;
+      const minor = match[3] || "0";
+      if (!vmap.has(major)) {
+        // no create major if exceeds
+        if (maxEachMajor !== undefined && vmap.size >= maxEachMajor) continue;
+        vmap.set(major, new Map());
+      }
+      const minorMap = vmap.get(major)!;
+      if (!minorMap.has(minor)) {
+        // no create minor if exceeds
+        if (maxEachMinor !== undefined && minorMap.size >= maxEachMinor) continue;
+        minorMap.set(minor, []);
+      }
+      const arr = minorMap.get(minor)!;
+      // no add patch if exceeds
+      if (maxEachPatch !== undefined && arr.length >= maxEachPatch) continue;
+      minorMap.get(minor)!.push(tag);
+    }
+  }
+  const count = { major: 0, minor: 0, patch: 0 };
+  const tagSet = new Set<string>();
+  for (const [_, minorMap] of vmap) {
+    count.major += 1;
+    for (const [_, tags] of minorMap) {
+      count.minor += 1;
+      for (const tag of tags) {
+        count.patch += 1;
+        tagSet.add(tag);
+      }
+    }
+  }
+  logger
+    .prevLine()
+    .clearLine()
+    .success(
+      "Reduction completed, reserved " +
+        [
+          ["major", count.major],
+          ["minor", count.minor],
+          ["patch", count.patch],
+        ]
+          .map(([cname, cvalue]) => `${Logger.ANSI_CYAN}${cname}=${Logger.ANSI_GREEN}${cvalue}${Logger.ANSI_RESET}`)
+          .join(", ") +
+        "."
+    );
+  return tagSet;
+}
+
+function createTagRedirect(tags: Set<string>, maxDeep = 2) {
+  type VMAP = Map<string, string[] | VMAP>;
+  const redirects: Record<string, string> = {};
+  function createVMap(tt: string[] | Set<string>, prefix: string = "") {
+    const v = new Map<string, string[]>();
+    for (const t of tt) {
+      const match = t.slice(prefix.length).match(/((^|\.)v?(\d+[^.]*))(\.\d+[^.]*)?/);
+      if (match) {
+        const m = match[1]!;
+        if (!v.has(m)) v.set(m, [t]);
+        else v.get(m)!.push(t);
+      }
+    }
+    return v;
+  }
+  function recursiveCreate(tt: string[] | Set<string>, depth: number, prefix: string = "") {
+    const v: VMAP = createVMap(tt, prefix);
+    if (depth >= maxDeep) return v;
+    for (const [k, vtags] of v) {
+      if (Array.isArray(vtags)) {
+        v.set(k, recursiveCreate(vtags, depth + 1, prefix + k));
+      }
+    }
+    return v;
+  }
+  const vmap: VMAP = recursiveCreate(tags, 1);
+  // dfs
+  function dfs(v: VMAP, curPrefix: string = "") {
+    let gFristTag = "";
+    for (const [k, vtags] of v) {
+      let firstTag = "";
+      let count = 0;
+      if (Array.isArray(vtags)) {
+        count += vtags.length;
+        if (vtags.length) firstTag = vtags[0]!;
+      } else {
+        firstTag = dfs(vtags, curPrefix + k);
+        count += 1;
+      }
+      // create redirect if more than 1 tag
+      if (count > 1 && firstTag) {
+        if (!tags.has(curPrefix + k)) {
+          redirects[curPrefix + k] = firstTag;
+          logger.info(
+            ` - Created redirect:`,
+            `${Logger.ANSI_CYAN}${curPrefix + k}${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${firstTag}${Logger.ANSI_RESET}`
+          );
+        }
+      }
+      if (!gFristTag && firstTag) gFristTag = firstTag;
+    }
+    return gFristTag;
+  }
+  dfs(vmap);
+  return redirects;
 }
 
 interface GenerateOptions {
   token?: string;
   ignoreEmptyAssets?: boolean;
+  reduceArgs?: (number | undefined)[];
 }
 
 async function generate(repoFullname: string, options: Partial<GenerateOptions> = {}) {
@@ -234,7 +389,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     );
     process.exit(1);
   }
-  logger.prevLine().cleanLine().success("Fetched repository data.");
+  logger.prevLine().clearLine().success("Fetched repository data.");
   const repoData = await repoResponse.json();
 
   let page = 1;
@@ -247,7 +402,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   while (true) {
     logger
       .prevLine()
-      .cleanLine()
+      .clearLine()
       .info(`Fetching releases data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
     const releasesResponse = await api.fetch(`${API_URL.releases}?page=${page}`);
     if (!releasesResponse.ok) {
@@ -276,7 +431,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   }
   logger
     .prevLine()
-    .cleanLine()
+    .clearLine()
     .success(`Fetched releases data, total ${Logger.ANSI_GREEN}${releasesData.length} releases${Logger.ANSI_RESET}.`);
 
   // tags data
@@ -287,7 +442,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     while (true) {
       logger
         .prevLine()
-        .cleanLine()
+        .clearLine()
         .info(`Fetching tags data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
       const tagsResponse = await api.fetch(`${API_URL.tags}?page=${page}`);
       if (!tagsResponse.ok) {
@@ -320,7 +475,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
         break;
       }
     }
-    logger.prevLine().cleanLine().success(`Fetched tags data.`);
+    logger.prevLine().clearLine().success(`Fetched tags data.`);
   } else {
     logger.success(`No releases to fetch tags for, skipping.`);
   }
@@ -360,13 +515,23 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
 
   const latestTag = releasesData[0].tag_name;
 
-  // compile releases data
-  logger.info(`Compiling releases data...`);
+  let tagNames = new Set<string>(releasesData.map((r) => r.tag_name));
+  // reduce releases if needed
+  if (opts.reduceArgs && opts.reduceArgs.length > 0) {
+    tagNames = reduceReleaseTags(tagNames, opts.reduceArgs[0], opts.reduceArgs[1], opts.reduceArgs[2]);
+  }
+
   const tagMap: Map<string, any> = new Map();
   for (const tag of tagsData) {
     tagMap.set(tag.name, tag);
   }
+
+  // compile releases data
+  logger.info(`Compiling releases data...`);
   for (const release of releasesData) {
+    // filter by reduced tags
+    if (!tagNames.has(release.tag_name)) continue;
+    // compile assets
     const assets = [];
     for (const asset of release.assets) {
       assets.push({
@@ -378,6 +543,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
         updated_at: asset.updated_at,
       });
     }
+    // compile release
     const labels = [];
     if (latestTag === release.tag_name) {
       labels.push("Latest");
@@ -446,43 +612,11 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     );
   }
   // version redirects
-  const versions = new Map<string, string>();
-  for (const tagname of releaseTags) {
-    const match = tagname.match(/^v?(\d+)(\.\d+)?/);
-    if (match) {
-      const major = match[1]!;
-      const minor = match[2] ? match[2].substring(1)! : null;
-      // do not overwrite release tags
-      if (!versions.has(major) && !releaseTags.has(tagname)) {
-        versions.set(major, tagname);
-      }
-      if (minor && !versions.has(`${major}.${minor}`) && !releaseTags.has(tagname)) {
-        versions.set(`${major}.${minor}`, tagname);
-      }
-    }
-  }
-  // remove versions that only have one release
-  const dotCount: Map<number, string[]> = new Map(); // key: dot count, value: versions
-  for (const [version, _] of versions) {
-    const count = (version.match(/\./g) || []).length;
-    if (!dotCount.has(count)) {
-      dotCount.set(count, []);
-    }
-    dotCount.get(count)!.push(version);
-  }
-  for (const [_, versionList] of dotCount) {
-    if (versionList.length === 1) {
-      versions.delete(versionList[0]!);
-    }
-  }
+  const tagRedirect = createTagRedirect(releaseTags, 2);
   // set redirects
-  for (const [version, tagName] of versions) {
+  for (const [version, tagName] of Object.entries(tagRedirect)) {
     config.redirect[version] = tagName;
     indexTags.add(tagName);
-    logger.info(
-      ` - Created redirect:`,
-      `${Logger.ANSI_CYAN}${version}${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${tagName}${Logger.ANSI_RESET}`
-    );
   }
   logger.success(`Created ${Logger.ANSI_GREEN}${Object.keys(config.redirect).length} redirects${Logger.ANSI_RESET}.`);
 
@@ -514,6 +648,7 @@ async function main() {
   const resultConfig = await generate(args.repoFullname, {
     token: args.token,
     ignoreEmptyAssets: args.ignoreEmptyAssets,
+    reduceArgs: args.reduceArgs,
   });
   logger.success("Generation completed.");
   // write to file

@@ -90,7 +90,11 @@ interface SyncOptions {
   downloadDir?: string;
   // -t, --url-template <template>
   downloadUrlTmpl?: string;
-  // --compare <path>
+  // -b, --build-base <base>
+  buildBase?: string;
+  // --www-root <directory>
+  wwwRootDir?: string;
+  // -c, --compare <path>
   compareConfigPath?: string;
 }
 
@@ -99,8 +103,10 @@ function usage() {
     `
 Usage: sync.ts <repo_fullname> [...options] [..generate options]
 Options:
-  -d, --download-dir <directory>      Directory to download files to
-  -t, --url-template <template>       Template URL for downloading files
+  -d, --download-dir <directory>      Directory for download files
+  -t, --url-template <template>       Template URL for downloading files (user-facing)
+  -b, --build-base <base>             Base URL for building front-end (e.g., /app/)
+  --www-root <directory>              Root directory for the front-end website
   --compare [path]                    Compare with former configuration file
 `.trim()
   );
@@ -109,7 +115,14 @@ Options:
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const options: SyncOptions = { repo: "", downloadDir: "", downloadUrlTmpl: "", compareConfigPath: "" };
+  const options: SyncOptions = {
+    repo: "",
+    downloadDir: "",
+    downloadUrlTmpl: "",
+    buildBase: "",
+    wwwRootDir: "",
+    compareConfigPath: "",
+  };
   const restArgs: string[] = [];
 
   while (args.length > 0) {
@@ -121,16 +134,59 @@ function parseArgs() {
         process.exit(0);
         break;
       case "-d":
-      case "--download-dir":
-        options.downloadDir = args.shift() || options.downloadDir;
+      case "--download-dir": {
+        const next = args.shift();
+        if (!next) {
+          printError(`Missing argument for ${arg}`);
+          usage();
+          process.exit(1);
+        }
+        options.downloadDir = next;
         break;
+      }
       case "-t":
-      case "--tmpl":
-        options.downloadUrlTmpl = args.shift() || options.downloadUrlTmpl;
+      case "--url-template": {
+        const next = args.shift();
+        if (!next) {
+          printError(`Missing argument for ${arg}`);
+          usage();
+          process.exit(1);
+        }
+        options.downloadUrlTmpl = next;
         break;
-      case "--compare":
-        options.compareConfigPath = args.shift();
+      }
+      case "-b":
+      case "--build-base": {
+        const next = args.shift();
+        if (!next) {
+          printError(`Missing argument for ${arg}`);
+          usage();
+          process.exit(1);
+        }
+        options.buildBase = next;
         break;
+      }
+      case "--www-root": {
+        const next = args.shift();
+        if (!next) {
+          printError(`Missing argument for ${arg}`);
+          usage();
+          process.exit(1);
+        }
+        options.wwwRootDir = next;
+        break;
+      }
+      case "-c":
+      case "--compare": {
+        const next = args.shift();
+        if (!next) {
+          printError(`Missing argument for ${arg}`);
+          usage();
+          process.exit(1);
+        }
+        options.compareConfigPath = next;
+        break;
+      }
       default:
         if (!arg.startsWith("-") && !options.repo) {
           options.repo = arg;
@@ -207,7 +263,7 @@ async function collectDiff(options: SyncOptions, config: Config, compareConfig?:
       const formerRelease = formerReleaseMap.get(release.tag.name);
       if (!formerRelease) {
         // new release
-        rec.add[release.tag.name] = release.assets.map((asset) => {
+        const addRec = release.assets.map((asset) => {
           const ctx = genCtx(release, asset);
           return {
             downloadUrl: asset.download_url,
@@ -215,6 +271,9 @@ async function collectDiff(options: SyncOptions, config: Config, compareConfig?:
             filename: asset.name,
           };
         });
+        if (addRec.length > 0) {
+          rec.add[release.tag.name] = addRec;
+        }
       } else {
         // modify release
         // existing release, compare assets
@@ -283,6 +342,14 @@ async function collectDiff(options: SyncOptions, config: Config, compareConfig?:
   return rec;
 }
 
+async function buildFrontEnd(configPath: string, outDir: string) {
+  printInfo(`Building front-end with config: ${configPath}`);
+  printSpliter("-", true);
+  await $`pnpm build -- -c ${configPath} -d ${outDir}`;
+  printSpliter("-", true);
+  return path.resolve(import.meta.dirname, outDir);
+}
+
 async function main() {
   const { options, restArgs } = parseArgs();
 
@@ -332,19 +399,32 @@ async function main() {
   printInfo(`Generating release data...`);
   printSpliter("-", true);
   const generateBin = path.resolve(import.meta.dirname, "generate.ts");
-  const outputJsonPath = path.join(workDir, "output.json");
-  const commandArgs = [generateBin, options.repo, ...restArgs, "-o", outputJsonPath];
+  const configJsonPath = path.join(workDir, "config.json");
+  const commandArgs = [generateBin, options.repo, ...restArgs, "-o", configJsonPath];
   const subprocess = Bun.spawnSync(["bun", "run", ...commandArgs], {
     stdio: ["inherit", "inherit", "inherit"],
   });
   panicSubprocess(subprocess);
   printSpliter("-", true);
 
-  const config: Config = JSON.parse(fs.readFileSync(outputJsonPath, "utf-8"));
+  const config: Config = JSON.parse(fs.readFileSync(configJsonPath, "utf-8"));
   // collect compare data
   const diff = await collectDiff(options, config, compareConfig);
-
   fs.writeFileSync(path.join(workDir, "record.json"), JSON.stringify(diff, null, 2), "utf-8");
+
+  if (
+    Object.keys(diff.add).length === 0 &&
+    Object.keys(diff.remove).length === 0 &&
+    Object.keys(diff.modify).length === 0
+  ) {
+    printInfo("Everything is up to date.");
+  } else {
+    // add first, then modify, then move frontend, then remove
+    // rsync -ahr --delete -P (archive,human-readable,recursive,delete,partial,progress)
+    const tempBuildDir = path.join(workDir, "web-dist");
+    await buildFrontEnd(configJsonPath, tempBuildDir);
+    // TODO: perform sync actions
+  }
 }
 
 if (import.meta.main) {
