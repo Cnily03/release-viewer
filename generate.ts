@@ -5,6 +5,9 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Config, Release } from "@/config";
 
+const PROGRAM_NAME = "Release-Viewer-Generator";
+const PROGRAM_VERSION = "1.0";
+
 declare global {
   interface String {
     replaceLast(searchValue: RegExp | string, replaceValue: string): string;
@@ -26,16 +29,19 @@ String.prototype.replaceLast = function (searchValue: RegExp | string, replaceVa
   );
 };
 
+const ANSI = {
+  DIM: "\x1b[2m",
+  BOLD: "\x1b[1m",
+  RESET: "\x1b[0m",
+  MAGENTA: "\x1b[35m",
+  CYAN: "\x1b[36m",
+  BLUE: "\x1b[34m",
+  GREEN: "\x1b[32m",
+  YELLOW: "\x1b[33m",
+  RED: "\x1b[31m",
+};
+
 class Logger {
-  static ANSI_DIM = "\x1b[2m";
-  static ANSI_BOLD = "\x1b[1m";
-  static ANSI_RESET = "\x1b[0m";
-  static ANSI_MAGENTA = "\x1b[35m";
-  static ANSI_CYAN = "\x1b[36m";
-  static ANSI_BLUE = "\x1b[34m";
-  static ANSI_GREEN = "\x1b[32m";
-  static ANSI_YELLOW = "\x1b[33m";
-  static ANSI_RED = "\x1b[31m";
   private pipe_stderr = false;
 
   constructor(pipe_stderr: boolean = false) {
@@ -125,9 +131,9 @@ class ApiFetcher {
   constructor(repo: string, token?: string) {
     this.headers = {
       "X-App-Repo": repo,
-      "User-Agent": `Release-Viewer-Generator (${process.platform})`,
+      "User-Agent": `${PROGRAM_NAME}/${PROGRAM_VERSION} (${process.platform})`,
       Accept: "application/vnd.github+json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer 1${token}` } : {}),
     };
   }
 
@@ -171,7 +177,7 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing <file> argument for ${arg}, running with --help for help.`
+            `${ANSI.RED}Error:${ANSI.RESET} missing <file> argument for ${arg}, running with --help for help.`
           );
           process.exit(1);
         }
@@ -182,7 +188,7 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing <token> argument for ${arg}, running with --help for help.`
+            `${ANSI.RED}Error:${ANSI.RESET} missing <token> argument for ${arg}, running with --help for help.`
           );
           process.exit(1);
         }
@@ -192,9 +198,7 @@ function parseArgs() {
       case "--reduce": {
         const next = args.shift();
         if (!next) {
-          console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing argument for ${arg}, running with --help for help.`
-          );
+          console.error(`${ANSI.RED}Error:${ANSI.RESET} missing argument for ${arg}, running with --help for help.`);
           process.exit(1);
         }
         const parts = next.split(",");
@@ -203,9 +207,7 @@ function parseArgs() {
             reduceArgs.push(p === "*" ? undefined : parseInt(p, 10));
           }
         } else {
-          console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} invalid argument for ${arg}, running with --help for help.`
-          );
+          console.error(`${ANSI.RED}Error:${ANSI.RESET} invalid argument for ${arg}, running with --help for help.`);
           process.exit(1);
         }
         break;
@@ -215,9 +217,7 @@ function parseArgs() {
         break;
       default:
         if (arg.startsWith("-")) {
-          console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} unknown option: ${arg}, running with --help for help.`
-          );
+          console.error(`${ANSI.RED}Error:${ANSI.RESET} unknown option: ${arg}, running with --help for help.`);
           process.exit(1);
           break;
         }
@@ -225,7 +225,7 @@ function parseArgs() {
           repoFullname = arg;
         } else {
           console.error(
-            `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} multiple <repo_fullname> arguments provided: ${repoFullname} and ${arg}`
+            `${ANSI.RED}Error:${ANSI.RESET} multiple <repo_fullname> arguments provided: ${repoFullname} and ${arg}`
           );
           process.exit(1);
           break;
@@ -235,9 +235,7 @@ function parseArgs() {
   }
   // check required args
   if (!repoFullname) {
-    console.error(
-      `${Logger.ANSI_RED}Error:${Logger.ANSI_RESET} missing <repo_fullname> argument, running with --help for help.`
-    );
+    console.error(`${ANSI.RED}Error:${ANSI.RESET} missing <repo_fullname> argument, running with --help for help.`);
     process.exit(1);
   }
   return { repoFullname, outputFile, token, ignoreEmptyAssets, reduceArgs };
@@ -294,7 +292,7 @@ function reduceReleaseTags(tags: Set<string>, maxEachMajor?: number, maxEachMino
           ["minor", count.minor],
           ["patch", count.patch],
         ]
-          .map(([cname, cvalue]) => `${Logger.ANSI_CYAN}${cname}=${Logger.ANSI_GREEN}${cvalue}${Logger.ANSI_RESET}`)
+          .map(([cname, cvalue]) => `${ANSI.CYAN}${cname}=${ANSI.GREEN}${cvalue}${ANSI.RESET}`)
           .join(", ") +
         "."
     );
@@ -346,7 +344,7 @@ function createTagRedirect(tags: Set<string>, maxDeep = 2) {
           redirects[curPrefix + k] = firstTag;
           logger.info(
             ` - Created redirect:`,
-            `${Logger.ANSI_CYAN}${curPrefix + k}${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${firstTag}${Logger.ANSI_RESET}`
+            `${ANSI.CYAN}${curPrefix + k}${ANSI.RESET} -> ${ANSI.CYAN}${firstTag}${ANSI.RESET}`
           );
         }
       }
@@ -366,6 +364,7 @@ interface GenerateOptions {
 
 async function generate(repoFullname: string, options: Partial<GenerateOptions> = {}) {
   const opts: GenerateOptions = Object.assign({}, options);
+  if (opts.token) logger.info("Using provided GitHub token for API requests.");
   const api = new ApiFetcher(repoFullname, opts.token);
   const API_URL = {
     repo: `https://api.github.com/repos/${repoFullname}`,
@@ -379,7 +378,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     const errMsg = await repoResponse.text().catch(() => "");
     logger.error(
       `Failed to fetch repository data for ${repoFullname}:`,
-      `${Logger.ANSI_BOLD}${repoResponse.status} ${repoResponse.statusText}${Logger.ANSI_RESET}:`,
+      `${ANSI.BOLD}${repoResponse.status} ${repoResponse.statusText}${ANSI.RESET}:`,
       errMsg
         ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
             .split("\n")
@@ -400,16 +399,13 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   const releasesData: any[] = [];
   logger.info("Fetching releases data...");
   while (true) {
-    logger
-      .prevLine()
-      .clearLine()
-      .info(`Fetching releases data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
+    logger.prevLine().clearLine().info(`Fetching releases data... ${ANSI.MAGENTA}${ANSI.DIM}PAGE ${page}${ANSI.RESET}`);
     const releasesResponse = await api.fetch(`${API_URL.releases}?page=${page}`);
     if (!releasesResponse.ok) {
       const errMsg = await releasesResponse.text().catch(() => "");
       logger.error(
         `Failed to fetch releases data for ${repoFullname}:`,
-        `${Logger.ANSI_BOLD}${releasesResponse.status} ${releasesResponse.statusText}${Logger.ANSI_RESET}:`,
+        `${ANSI.BOLD}${releasesResponse.status} ${releasesResponse.statusText}${ANSI.RESET}:`,
         errMsg
           ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
               .split("\n")
@@ -432,7 +428,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   logger
     .prevLine()
     .clearLine()
-    .success(`Fetched releases data, total ${Logger.ANSI_GREEN}${releasesData.length} releases${Logger.ANSI_RESET}.`);
+    .success(`Fetched releases data, total ${ANSI.GREEN}${releasesData.length} releases${ANSI.RESET}.`);
 
   // tags data
   const tagsData: any[] = [];
@@ -440,16 +436,13 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   if (releasesData.length > 0) {
     logger.info("Fetching tags data...");
     while (true) {
-      logger
-        .prevLine()
-        .clearLine()
-        .info(`Fetching tags data... ${Logger.ANSI_MAGENTA}${Logger.ANSI_DIM}PAGE ${page}${Logger.ANSI_RESET}`);
+      logger.prevLine().clearLine().info(`Fetching tags data... ${ANSI.MAGENTA}${ANSI.DIM}PAGE ${page}${ANSI.RESET}`);
       const tagsResponse = await api.fetch(`${API_URL.tags}?page=${page}`);
       if (!tagsResponse.ok) {
         const errMsg = await tagsResponse.text().catch(() => "");
         logger.error(
           `Failed to fetch tags data for ${repoFullname}:`,
-          `${Logger.ANSI_BOLD}${tagsResponse.status} ${tagsResponse.statusText}${Logger.ANSI_RESET}:`,
+          `${ANSI.BOLD}${tagsResponse.status} ${tagsResponse.statusText}${ANSI.RESET}:`,
           errMsg
             ? `\n${JSON.stringify(JSON.parse(errMsg), null, 2)
                 .split("\n")
@@ -482,7 +475,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   if (tagSet.size > 0) {
     logger.warn(
       `Some tags in releases are not found in tags API: ${Array.from(tagSet)
-        .map((tag) => `${Logger.ANSI_CYAN}${tag}${Logger.ANSI_RESET}`)
+        .map((tag) => `${ANSI.CYAN}${tag}${ANSI.RESET}`)
         .join(", ")}`
     );
     logger.warn(`These tags will be removed from releases.`);
@@ -509,7 +502,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   };
 
   if (releasesData.length === 0) {
-    logger.warn(`No releases found for ${Logger.ANSI_CYAN}${repoFullname}${Logger.ANSI_RESET}, aborting.`);
+    logger.warn(`No releases found for ${ANSI.CYAN}${repoFullname}${ANSI.RESET}, aborting.`);
     return config;
   }
 
@@ -586,16 +579,16 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
       body: release.body,
     };
     logger.info(
-      ` - Compiled release with ${assets.length > 0 ? Logger.ANSI_GREEN : Logger.ANSI_YELLOW}${assets.length} assets${Logger.ANSI_RESET}:`,
-      `${Logger.ANSI_CYAN}${release.name}   ${Logger.ANSI_DIM}${release.tag_name}${Logger.ANSI_RESET}`
+      ` - Compiled release with ${assets.length > 0 ? ANSI.GREEN : ANSI.YELLOW}${assets.length} assets${ANSI.RESET}:`,
+      `${ANSI.CYAN}${release.name}   ${ANSI.DIM}${release.tag_name}${ANSI.RESET}`
     );
     if (opts.ignoreEmptyAssets && assets.length === 0) {
-      logger.info(`   ${Logger.ANSI_YELLOW}* Skipped due to empty assets${Logger.ANSI_RESET}`);
+      logger.info(`   ${ANSI.YELLOW}* Skipped due to empty assets${ANSI.RESET}`);
     } else {
       config.releases.push(oneRelease);
     }
   }
-  logger.success(`Compiled ${Logger.ANSI_GREEN}${config.releases.length} releases${Logger.ANSI_RESET}.`);
+  logger.success(`Compiled ${ANSI.GREEN}${config.releases.length} releases${ANSI.RESET}.`);
 
   const indexTags = new Set<string>();
 
@@ -606,10 +599,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   if (releaseTags.has(latestTag)) {
     config.redirect.latest = latestTag;
     indexTags.add(latestTag);
-    logger.info(
-      ` - Created redirect:`,
-      `${Logger.ANSI_CYAN}latest${Logger.ANSI_RESET} -> ${Logger.ANSI_CYAN}${latestTag}${Logger.ANSI_RESET}`
-    );
+    logger.info(` - Created redirect:`, `${ANSI.CYAN}latest${ANSI.RESET} -> ${ANSI.CYAN}${latestTag}${ANSI.RESET}`);
   }
   // version redirects
   const tagRedirect = createTagRedirect(releaseTags, 2);
@@ -618,13 +608,13 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
     config.redirect[version] = tagName;
     indexTags.add(tagName);
   }
-  logger.success(`Created ${Logger.ANSI_GREEN}${Object.keys(config.redirect).length} redirects${Logger.ANSI_RESET}.`);
+  logger.success(`Created ${ANSI.GREEN}${Object.keys(config.redirect).length} redirects${ANSI.RESET}.`);
 
   // set index tags
   config.index_tags = Array.from(indexTags);
-  logger.success(`Set ${Logger.ANSI_GREEN}${config.index_tags.length} index tags${Logger.ANSI_RESET}:`);
+  logger.success(`Set ${ANSI.GREEN}${config.index_tags.length} index tags${ANSI.RESET}:`);
   for (const tag of config.index_tags) {
-    logger.info(` - ${Logger.ANSI_CYAN}${tag}${Logger.ANSI_RESET}`);
+    logger.info(` - ${ANSI.CYAN}${tag}${ANSI.RESET}`);
   }
 
   return config;
@@ -634,15 +624,9 @@ async function main() {
   const args = parseArgs();
   if (args.outputFile) logger.setPipeStderr(true);
   const outputFilePath = args.outputFile ? path.resolve(args.outputFile) : null;
-  logger.info(
-    `${Logger.ANSI_BLUE}Repository:${Logger.ANSI_RESET}`,
-    `${Logger.ANSI_CYAN}${args.repoFullname}${Logger.ANSI_RESET}`
-  );
+  logger.info(`${ANSI.BLUE}Repository:${ANSI.RESET}`, `${ANSI.CYAN}${args.repoFullname}${ANSI.RESET}`);
   if (outputFilePath)
-    logger.info(
-      `${Logger.ANSI_BLUE}Output file:${Logger.ANSI_RESET}`,
-      `${Logger.ANSI_CYAN}${outputFilePath}${Logger.ANSI_RESET}`
-    );
+    logger.info(`${ANSI.BLUE}Output file:${ANSI.RESET}`, `${ANSI.CYAN}${outputFilePath}${ANSI.RESET}`);
   // generate
   logger.info("Starting generation...");
   const resultConfig = await generate(args.repoFullname, {
@@ -655,7 +639,7 @@ async function main() {
   logger.info("Writing to file...");
   if (args.outputFile) {
     fs.writeFileSync(args.outputFile, JSON.stringify(resultConfig, null, 2));
-    logger.success(`Saved at ${Logger.ANSI_BLUE}${outputFilePath}${Logger.ANSI_RESET}`);
+    logger.success(`Saved at ${ANSI.BLUE}${outputFilePath}${ANSI.RESET}`);
     return;
   } else {
     logger.success("No output file specified, printing to stdout.");
