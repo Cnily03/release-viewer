@@ -8,6 +8,87 @@ import type { Config, Release, ReleaseAsset } from "@/config";
 const PROGRAM_NAME = "Release-Viewer-Sync";
 const PROGRAM_VERSION = "1.0";
 
+class AtomicLock {
+  private len: Uint8Array;
+  constructor() {
+    const buffer = new SharedArrayBuffer(16);
+    this.len = new Uint8Array(buffer);
+  }
+  private waitingResolvers: Array<() => void> = [];
+  lock() {
+    return new Promise<void>((resolve) => {
+      const formerlen = Atomics.add(this.len, 0, 1);
+      if (formerlen === 0) {
+        resolve();
+        Atomics.sub(this.len, 0, 1);
+      } else {
+        this.waitingResolvers.push(resolve);
+      }
+    });
+  }
+  unlock() {
+    const nextResolver = this.waitingResolvers.shift();
+    if (nextResolver) {
+      nextResolver();
+      Atomics.sub(this.len, 0, 1);
+    }
+  }
+}
+
+class Mutex {
+  private num: number = 0;
+  private max: number;
+  private waitingLockers: Array<() => void> = [];
+  private waitingAllResolvers: Array<() => void> = [];
+  private atomicLock: AtomicLock = new AtomicLock();
+  constructor(max: number) {
+    this.max = max;
+  }
+  async lock() {
+    return new Promise<void>((resolve) => {
+      const doLock = () => {
+        this.num += 1;
+        resolve();
+      };
+      this.atomicLock.lock().then(() => {
+        if (this.num < this.max) {
+          doLock();
+        } else {
+          this.waitingLockers.push(doLock);
+        }
+        this.atomicLock.unlock();
+      });
+    });
+  }
+  async release() {
+    await this.atomicLock.lock();
+    this.num = Math.max(0, this.num - 1);
+    const nextLocker = this.waitingLockers.shift();
+    if (nextLocker) {
+      nextLocker();
+    } else {
+      let resolver = this.waitingAllResolvers.shift();
+      while (resolver && this.num === 0) {
+        resolver();
+        resolver = this.waitingAllResolvers.shift();
+      }
+    }
+    this.atomicLock.unlock();
+  }
+  async waitAll() {
+    return new Promise<void>((resolve) => {
+      this.atomicLock.lock().then(() => {
+        if (this.num === 0) {
+          resolve();
+        } else {
+          this.waitingAllResolvers.push(resolve);
+        }
+        this.atomicLock.unlock();
+      });
+    });
+  }
+}
+
 class SubprocessError extends Error {
   exitCode: number | null;
   signalCode: string | null;
@@ -918,23 +999,11 @@ async function main() {
           }
         };
         // download with concurrency
-        let idx = 0;
-        const concurrencyPool: Map<number, Promise<void>> = new Map();
+        const mutex = new Mutex(options.concurrency);
         for (const { tag, item, mvType } of iterator()) {
-          if (concurrencyPool.size >= options.concurrency) {
-            // until concurrency slot is available
-            await new Promise<void>((resolve) => {
-              if (concurrencyPool.size < options.concurrency) return resolve();
-              const timer = setInterval(() => {
-                if (concurrencyPool.size < options.concurrency) {
-                  clearInterval(timer);
-                  resolve();
-                }
-              }, 1000);
-            });
-          }
+          // until concurrency slot is available
+          await mutex.lock();
           // start single download
-          idx += 1;
           const pDlSingle = (async () => {
             const destPath = path.join(tempDownloadDir, mvType, tag, item.filename);
             printInfo(
@@ -972,11 +1041,14 @@ async function main() {
                 needMoveFiles.push({ type: mvType, tag, item, srcPath: destPath });
               }
             }
-            concurrencyPool.delete(idx);
+            mutex.release();
           })();
-          concurrencyPool.set(idx, pDlSingle);
+          pDlSingle.catch((e) => {
+            terminateWithError(`Unexpected error during downloading: ${e.message}`);
+            process.exit(1);
+          });
         }
-        await Promise.race(concurrencyPool.values());
+        await mutex.waitAll();
         printInfo(
           `Download completed: ${ANSI.GREEN}${counter.success} succeeded${ANSI.RESET}, ${ANSI.RED}${counter.failed} failed${ANSI.RESET}.`
         );
