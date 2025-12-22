@@ -133,7 +133,7 @@ class ApiFetcher {
       "X-App-Repo": repo,
       "User-Agent": `${PROGRAM_NAME}/${PROGRAM_VERSION} (${process.platform})`,
       Accept: "application/vnd.github+json",
-      ...(token ? { Authorization: `Bearer 1${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   }
 
