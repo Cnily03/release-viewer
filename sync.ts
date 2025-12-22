@@ -793,9 +793,10 @@ async function createLocalEmptyDownloadTarget(basePath: string, config: Config) 
 }
 
 async function buildFrontEnd(configPath: string, outDir: string) {
-  printInfo(`Building front-end with config: ${configPath}`);
+  printInfo(`Building front-end with config: ${ANSI.DIM}${configPath}${ANSI.RESET}`);
   printSpliter("-", true);
-  await $`pnpm build -- -c ${configPath} -d ${outDir}`;
+  const buildDir = path.resolve(import.meta.dirname);
+  await $`pnpm --prefix=${buildDir} build -- -c ${configPath} -d ${outDir}`;
   printSpliter("-", true);
   return path.resolve(import.meta.dirname, outDir);
 }
@@ -879,7 +880,7 @@ async function main() {
     Bun.spawnSync(["rm", "-rf", workDir], { stdio: ["ignore", "ignore", "ignore"] });
     process.exit(130);
   });
-  printInfo(`${ANSI.CYAN}Working directory:${ANSI.RESET} ${workDir}`);
+  printInfo(`${ANSI.CYAN}Working directory:${ANSI.RESET} ${ANSI.DIM}${workDir}${ANSI.RESET}`);
   const emptyPath = path.join(workDir, "empty");
   fs.closeSync(fs.openSync(emptyPath, "w"));
 
@@ -991,7 +992,8 @@ async function main() {
     // download
     const tempDownloadDir = path.join(workDir, "downloads");
     fs.mkdirSync(tempDownloadDir, { recursive: true });
-    printInfo(`Downloading files to temporary directory: ${tempDownloadDir}`);
+    printInfo(`Downloading files to temporary directory: ${ANSI.DIM}${tempDownloadDir}${ANSI.RESET}`);
+    if (options.token) printInfo("Using provided GitHub token for downloading.");
 
     if (downloadTarget) {
       if (diffCount.add + diffCount.modify + diffCount.fix > 0) {
