@@ -8,6 +8,8 @@ import type { Config, Release } from "@/config";
 const PROGRAM_NAME = "Release-Viewer-Generator";
 const PROGRAM_VERSION = "1.0";
 
+const GITHUB_API_BASE = process.env.GITHUB_API_BASE || "https://api.github.com";
+
 declare global {
   interface String {
     replaceLast(searchValue: RegExp | string, replaceValue: string): string;
@@ -367,9 +369,9 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
   if (opts.token) logger.info("Using provided GitHub token for API requests.");
   const api = new ApiFetcher(repoFullname, opts.token);
   const API_URL = {
-    repo: `https://api.github.com/repos/${repoFullname}`,
-    releases: `https://api.github.com/repos/${repoFullname}/releases`,
-    tags: `https://api.github.com/repos/${repoFullname}/tags`,
+    repo: `${GITHUB_API_BASE}/repos/${repoFullname}`,
+    releases: `${GITHUB_API_BASE}/repos/${repoFullname}/releases`,
+    tags: `${GITHUB_API_BASE}/repos/${repoFullname}/tags`,
   };
   // repo data
   logger.info("Fetching repository data...");
