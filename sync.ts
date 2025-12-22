@@ -793,9 +793,14 @@ async function createLocalEmptyDownloadTarget(basePath: string, config: Config) 
 }
 
 async function buildFrontEnd(configPath: string, outDir: string) {
-  printInfo(`Building front-end with config: ${ANSI.DIM}${configPath}${ANSI.RESET}`);
-  printSpliter("-", true);
   const buildDir = path.resolve(import.meta.dirname);
+  printInfo(`Installing dependencies...`);
+  printSpliter("-", true);
+  await $`pnpm --prefix=${buildDir} install`;
+  printSpliter("-", true);
+
+  printInfo(`Building with config: ${ANSI.DIM}${configPath}${ANSI.RESET}`);
+  printSpliter("-", true);
   await $`pnpm --prefix=${buildDir} build -- -c ${configPath} -d ${outDir}`;
   printSpliter("-", true);
   return path.resolve(import.meta.dirname, outDir);
@@ -828,10 +833,8 @@ async function syncFrontEnd(options: SyncOptions, workDir: string, configJsonPat
       fs.copyFileSync(configJsonPath, buildConfigPath);
     }
     printInfo(`Building front-end website...`);
-    printSpliter("-", true);
     const tempBuildDir = path.join(workDir, "web-dist");
     await buildFrontEnd(buildConfigPath, tempBuildDir);
-    printSpliter("-", true);
 
     // rsync -ahr --delete -P (archive,human-readable,recursive,delete,partial,progress)
     printInfo(`Synchronizing front-end website to: ${ANSI.CYAN}${options.wwwRootDir}${ANSI.RESET}`);
