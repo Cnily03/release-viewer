@@ -179,15 +179,15 @@ Basic Options:
   -o,
   --save <path>                       Save generated configuration to file
   -c,
-  --compare [path]                    Compare with former configuration file
+  --compare <path>                    Compare with former configuration file
 
 Download Options:
   -d,
-  --download-target <directory>       Directory for download files
+  --download-target <directory>       Directory for downloaded files
   -t,
   --url-template <template>           Template URL for downloading files (user-facing)
   --fast-fail                         Fail immediately on download error
-  --fast-sync                         Synchronize files to downnload directory after download immediately
+  --fast-sync                         Synchronize files to downloaded directory after download immediately
   --concurrency <number>              Number of concurrent downloads (default: 1)
 
 Build Options:
