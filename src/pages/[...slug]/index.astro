@@ -57,7 +57,8 @@ const { slug, type, ...props } = Astro.props;
     window.location.replace(document.currentScript.dataset.url);
   </script>
   <Layout
-    title={`${props.release?.name || slug.join("/")} - ${config.name}`}
+    title={`${props.release?.name || slug.join("/")} - ${config.repo_fullname || config.name}`}
+    description={config.description}
     class:list="py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-8"
   >
     <div class="max-w-7xl px-3 md:px-4 lg:px-5 mx-auto mt-10" id="intro">

@@ -4,9 +4,10 @@ import type { HTMLAttributes } from "astro/types";
 
 export interface Props extends HTMLAttributes<"div"> {
   title: string;
+  description?: string;
 }
 
-const { title, ...rest } = Astro.props;
+const { title, description, ...rest } = Astro.props;
 ---
 
 <!doctype html>
@@ -15,6 +16,7 @@ const { title, ...rest } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    {description && <meta name="description" content={description} />}
     <script>
       function isDarkMode() {
         const preferredDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
