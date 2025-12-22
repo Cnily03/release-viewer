@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { downloadAndCacheImage } from "./preload-image.ts";
+
+export interface Props extends HTMLAttributes<"img"> {
+  src?: string;
+}
+
+const { src, ...rest } = Astro.props;
+
+let finalSrc = src;
+
+if (src && process.env.NODE_ENV === "production" && /https?:\/\/.+/.test(src)) {
+  finalSrc = await downloadAndCacheImage(src);
+}
+---
+
+<img src={finalSrc} {...rest} />

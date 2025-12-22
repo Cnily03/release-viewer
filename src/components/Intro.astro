@@ -4,6 +4,7 @@ import Show from "./Show.astro";
 import type { HTMLAttributes } from "astro/types";
 import clsx from "clsx";
 import Tag from "./Tag.astro";
+import Image from "@plugins/preload-image/Image.astro";
 import "@/styles/github-markdown.css";
 
 export interface Props extends HTMLAttributes<"div"> {
@@ -24,7 +25,7 @@ const { name, description, repoFullname, repoUrl, avatarUrl, labels = [], licens
     <div class="flex flex-col gap-y-2 break-word">
       <div class="flex flex-row items-center justify-start" data-role="intro-title">
         <Show when={avatarUrl}>
-          <img
+          <Image
             src={avatarUrl}
             alt={repoFullname || name}
             width={32}

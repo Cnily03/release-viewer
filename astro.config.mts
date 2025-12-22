@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import icon from "astro-icon";
 import * as dotenv from "dotenv";
+import preloadImage from "./plugins/preload-image";
 import { parseBuildArgs } from "./src/arguments";
 
 const unique = (arr: string[]) => [...new Set(arr)];
@@ -19,7 +20,7 @@ const buildArgs = parseBuildArgs();
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [icon()],
+  integrations: [icon(), preloadImage()],
 
   trailingSlash: "always",
   base: buildArgs.buildBase || process.env.APP_BUILD_BASE || "/",

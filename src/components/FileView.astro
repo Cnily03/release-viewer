@@ -6,8 +6,9 @@ import { fmtDate, fmtSize, labelType } from "@/scripts/format";
 import { Markdown } from "@/scripts/markdown";
 import Copy from "./Copy.astro";
 import Tag from "./Tag.astro";
-import "@/styles/github-markdown.css";
 import Show from "./Show.astro";
+import Image from "@plugins/preload-image/Image.astro";
+import "@/styles/github-markdown.css";
 
 export interface Props {
   repoUrl?: string;
@@ -93,7 +94,7 @@ const assetsWithSourceCode = release.assets
         <Show when={release.author}>
           <span class="*:inline">
             <Show when={release.author?.avatar_url}>
-              <img
+              <Image
                 src={release.author!.avatar_url}
                 alt={release.author!.name}
                 width={20}
@@ -201,7 +202,7 @@ const assetsWithSourceCode = release.assets
                       <Show when={t === "artifact" && asset.digest}>
                         <span class="flex-1 whitespace-nowrap truncate">{asset.digest}</span>
                         <Copy
-                          copyText={asset.digest}
+                          copyText={asset.digest!}
                           class:list="inline-flex rounded-md w-7 h-7 items-center justify-center hover:bg-theme-text/10"
                         >
                           <Icon name="octicon:check-16" width={16} height={16} class="text-success" slot="when-ok" />

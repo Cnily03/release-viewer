@@ -4,6 +4,7 @@ import { fmtDate } from "@/scripts/format";
 import Show from "./Show.astro";
 import clsx from "clsx";
 import { Icon } from "astro-icon/components";
+import Image from "@plugins/preload-image/Image.astro";
 import "@/styles/github-markdown.css";
 
 export interface Props {
@@ -28,7 +29,7 @@ const { release } = Astro.props;
     <Show when={release.author}>
       <span class="*:inline">
         <Show when={release.author?.avatar_url}>
-          <img
+          <Image
             src={release.author!.avatar_url}
             alt={release.author!.name}
             width={20}

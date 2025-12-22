@@ -27,7 +27,8 @@
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@plugins/*": ["./plugins/*"]
     }
   },
   "extends": "astro/tsconfigs/strict",
