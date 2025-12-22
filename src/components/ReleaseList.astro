@@ -54,7 +54,7 @@ const { list, ...rest } = Astro.props;
       list.map(item => {
         const labels = item.labels || [];
         return (
-          <li class="list-item flex-wrap md:flex-nowrap">
+          <li class="list-item flex-wrap md:flex-nowrap gap-y-1">
             <div class={clsx("flex flex-1flex-row justify-start items-center truncate", "w-full md:w-1/2")}>
               <span class={clsx("w-4", labels.length ? labelColor[labels[0]!] : "gh-theme text-(--fgColor-muted)")}>
                 <Icon name="octicon:file-directory-16" width={16} height={16} />
