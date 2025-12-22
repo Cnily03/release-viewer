@@ -38,7 +38,7 @@ class AtomicLock {
 class Mutex {
   private num: number = 0;
   private max: number;
-  private waitingLockers: Array<() => void> = [];
+  private waitingLockerResolvers: Array<() => void> = [];
   private waitingAllResolvers: Array<() => void> = [];
   private atomicLock: AtomicLock = new AtomicLock();
   constructor(max: number) {
@@ -46,15 +46,12 @@ class Mutex {
   }
   async lock() {
     return new Promise<void>((resolve) => {
-      const doLock = () => {
-        this.num += 1;
-        resolve();
-      };
       this.atomicLock.lock().then(() => {
         if (this.num < this.max) {
-          doLock();
+          this.num += 1; // occupy
+          resolve(); // end the locker waiting
         } else {
-          this.waitingLockers.push(doLock);
+          this.waitingLockerResolvers.push(resolve);
         }
         this.atomicLock.unlock();
       });
@@ -62,13 +59,15 @@ class Mutex {
   }
   async release() {
     await this.atomicLock.lock();
-    this.num = Math.max(0, this.num - 1);
-    const nextLocker = this.waitingLockers.shift();
-    if (nextLocker) {
-      nextLocker();
-    } else {
+    this.num = Math.max(0, this.num - 1); // release
+    const nextLockerResolver = this.waitingLockerResolvers.shift();
+    if (nextLockerResolver) {
+      this.num += 1; // occupy
+      nextLockerResolver(); // end the locker waiting
+    }
+    if (this.num === 0) {
       let resolver = this.waitingAllResolvers.shift();
-      while (resolver && this.num === 0) {
+      while (resolver) {
         resolver();
         resolver = this.waitingAllResolvers.shift();
       }
@@ -158,7 +157,7 @@ const printError = (message: string, ...params: any[]) => {
 };
 
 const terminateWithError = (message: string, ...params: any[]) => {
-  printError(message, ...params);
+  console.error(`${ANSI.RED}Error:${ANSI.RESET} ${message}`, ...params);
 };
 
 export interface UrlTemplateContext {
@@ -1047,7 +1046,7 @@ async function main() {
                 needMoveFiles.push({ type: mvType, tag, item, srcPath: destPath });
               }
             }
-            mutex.release();
+            await mutex.release();
           })();
           pDlSingle.catch((e) => {
             terminateWithError(`Unexpected error during downloading: ${e.message}`);
