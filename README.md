@@ -87,6 +87,7 @@ Download Options:
   --fast-fail                         Fail immediately on download error
   --fast-sync                         Synchronize files to downloaded directory after download immediately
   --concurrency <number>              Number of concurrent downloads (default: 1)
+  --token <token>                     GitHub API token (or set GITHUB_TOKEN env variable)
 
 Build Options:
   -b,

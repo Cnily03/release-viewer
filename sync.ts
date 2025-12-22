@@ -181,6 +181,8 @@ interface SyncOptions {
   fastSync?: boolean;
   // --concurrency <number>
   concurrency: number;
+  // --token <token>
+  token?: string;
   // -b, --build-base <base>
   buildBase?: string;
   // --www-root <directory>
@@ -269,6 +271,7 @@ Download Options:
   --fast-fail                         Fail immediately on download error
   --fast-sync                         Synchronize files to downloaded directory after download immediately
   --concurrency <number>              Number of concurrent downloads (default: 1)
+  --token <token>                     GitHub API token (or set GITHUB_TOKEN env variable)
 
 Build Options:
   -b,
@@ -288,6 +291,7 @@ function parseArgs() {
     fastFail: false,
     fastSync: false,
     concurrency: 1,
+    token: "",
     buildBase: "",
     wwwRootDir: "",
     compareConfigPath: "",
@@ -308,7 +312,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.saveConfigPath = next;
@@ -319,7 +322,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.compareConfigPath = next;
@@ -330,7 +332,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.downloadTarget = next;
@@ -341,7 +342,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.downloadUrlTmpl = next;
@@ -359,16 +359,24 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         const num = Number(next);
         if (Number.isNaN(num) || num <= 0 || !Number.isInteger(num)) {
           terminateWithError(`Invalid concurrency number: ${next}`);
-          usage();
           process.exit(1);
         }
         options.concurrency = num;
+        break;
+      }
+      case "--token": {
+        const next = args.shift();
+        if (!next) {
+          terminateWithError(`Missing argument for ${arg}`);
+          process.exit(1);
+        }
+        options.token = next;
+        restArgs.push(arg, next); // pass to generate.ts
         break;
       }
       case "-b":
@@ -376,7 +384,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.buildBase = next;
@@ -386,7 +393,6 @@ function parseArgs() {
         const next = args.shift();
         if (!next) {
           terminateWithError(`Missing argument for ${arg}`);
-          usage();
           process.exit(1);
         }
         options.wwwRootDir = next;
@@ -506,7 +512,12 @@ function ensureCommand(cmd: string | string[], emsg: string = "") {
   }
 }
 
-async function downloadFile(url: string, destPath: string, retryCount: number = 3): Promise<boolean> {
+async function downloadFile(
+  url: string,
+  destPath: string,
+  token: string = "",
+  retryCount: number = 3
+): Promise<boolean> {
   // mkdir parent directory
   const parentDir = path.dirname(destPath);
   fs.mkdirSync(parentDir, { recursive: true });
@@ -514,7 +525,10 @@ async function downloadFile(url: string, destPath: string, retryCount: number = 
 
   // curl
   if (checkCommandAvailable("curl")) {
-    const so = await $`curl -fsSL --retry ${retryCount} -A ${UserAgent} -o ${destPath} ${url}`.nothrow().quiet();
+    const h_auth = token ? `-H'Authorization: Bearer ${token}'` : "";
+    const so = await $`curl -fsSL --retry ${retryCount} -A ${UserAgent} ${h_auth} -o ${destPath} ${url}`
+      .nothrow()
+      .quiet();
     if (so.exitCode !== 0) {
       printError(
         `Failed to (curl) download ${ANSI.CYAN}${ANSI.DIM}${url}${ANSI.RESET}: exit code ${so.exitCode}: ${so.stderr?.toString()}`
@@ -524,7 +538,8 @@ async function downloadFile(url: string, destPath: string, retryCount: number = 
   }
   // wget
   else if (checkCommandAvailable("wget")) {
-    const so = await $`wget -q --tries=${retryCount} -U ${UserAgent} -O ${destPath} ${url}`.nothrow().quiet();
+    const h_auth = token ? `--header='Authorization: Bearer ${token}'` : "";
+    const so = await $`wget -q --tries=${retryCount} -U ${UserAgent} ${h_auth} -O ${destPath} ${url}`.nothrow().quiet();
     if (so.exitCode !== 0) {
       printError(
         `Failed to (wget) download ${ANSI.CYAN}${ANSI.DIM}${url}${ANSI.RESET}: exit code ${so.exitCode}: ${so.stderr?.toString()}`
@@ -1015,7 +1030,7 @@ async function main() {
               `${ANSI.BOLD}Downloading file:${ANSI.RESET} ${ANSI.CYAN}${tag}${ANSI.RESET} / ${filenameFmt}` +
                 `\n${PADDING} ${ANSI.BOLD}${ANSI.DIM}via ${ANSI.RESET}${ANSI.DIM}${item.downloadUrl}${ANSI.RESET}`
             );
-            const success = await downloadFile(item.downloadUrl, destPath, 3);
+            const success = await downloadFile(item.downloadUrl, destPath, options.token ?? "", 3);
             if (!success) {
               counter.failed += 1;
               if (options.fastFail) {
