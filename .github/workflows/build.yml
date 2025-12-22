@@ -69,4 +69,4 @@ jobs:
         run: pnpm install
 
       - name: Lint
-        run: pnpm --prefix lint
+        run: pnpm lint
