@@ -1,13 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { AstroIntegration } from "astro";
-import { CACHE_DIR, EXPORT_DIR, PKG_NAME } from "./constants";
+import { CACHE_DIR } from "./utils.js";
+import { fileURLToPath } from "node:url";
 
-let outDir: URL;
-
-function joinURL(u: URL, ...paths: string[]) {
-  return new URL(path.join(...paths), u);
-}
+const PKG_NAME = "astro-image-preload";
+const EXPORT_DIR = "_image/";
 
 async function awaitBatchPromises<T, R>(
   items: T[],
@@ -27,21 +25,26 @@ export default function preloadImage(): AstroIntegration {
   return {
     name: PKG_NAME,
     hooks: {
-      "astro:build:start": async () => {
-        await fs.rm(CACHE_DIR, { recursive: true, force: true });
+      "astro:build:setup": async () => {
+        if (await fs.statfs(CACHE_DIR).catch(() => false)) {
+          await fs.rm(CACHE_DIR, { recursive: true, force: true });
+        }
+        console.log(`[${PKG_NAME}] Creating cache directory at ${CACHE_DIR}`);
         await fs.mkdir(CACHE_DIR, { recursive: true });
       },
-      "astro:config:done": ({ config }) => {
-        outDir = config.outDir;
-      },
-      "astro:build:done": async () => {
-        const exportDir = joinURL(outDir, EXPORT_DIR);
-        const files = await fs.readdir(CACHE_DIR);
+      "astro:build:generated": async ({ dir }) => {
+        const exportDir = path.resolve(fileURLToPath(dir), EXPORT_DIR);
+        const files = await fs.readdir(path.resolve(CACHE_DIR));
         if (files.length) {
           await fs.mkdir(exportDir, { recursive: true });
           await awaitBatchPromises(files, 10, async (file) => {
-            return fs.copyFile(path.join(CACHE_DIR, file), joinURL(exportDir, file));
+            return fs.copyFile(path.join(CACHE_DIR, file), path.join(exportDir, file));
           });
+        }
+      },
+      "astro:build:done": async () => {
+        if (await fs.statfs(CACHE_DIR).catch(() => false)) {
+          await fs.rm(CACHE_DIR, { recursive: true, force: true });
         }
       },
     },

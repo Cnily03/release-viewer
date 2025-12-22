@@ -1,6 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import { downloadAndCacheImage } from "./preload-image.ts";
+import { downloadAndCacheImage } from "./utils";
 
 export interface Props extends HTMLAttributes<"img"> {
   src?: string;

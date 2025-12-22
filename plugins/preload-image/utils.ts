@@ -1,5 +1,6 @@
 import fs from "node:fs";
-import { CACHE_DIR } from "./constants";
+
+export const CACHE_DIR = "node_modules/.astro/image-cache/";
 
 const cacheMap = new Map<string, string>();
 
@@ -45,7 +46,7 @@ export async function downloadAndCacheImage(src: string) {
   if (!fs.existsSync(savePath)) {
     fs.writeFileSync(savePath, buffer);
   }
-  const finalSrc = `${import.meta.env.BASE_URL.replace(/\/+$/g, "")}/_image/${newFilename}`;
+  const finalSrc = `${import.meta.env.BASE_URL!.replace(/\/+$/g, "")}/_image/${newFilename}`;
   cacheMap.set(src, finalSrc);
   return finalSrc;
 }
