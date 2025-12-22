@@ -1,6 +1,8 @@
 ---
 import "@/styles/global.css";
 import type { HTMLAttributes } from "astro/types";
+import packageJson from "../../package.json";
+import type { version } from "node:os";
 
 export interface Props extends HTMLAttributes<"div"> {
   title: string;
@@ -17,6 +19,12 @@ const { title, description, ...rest } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {packageJson.name && <meta name="generator" content={packageJson.name} />}
+    <meta name="build-time" content={new Date().toISOString()} />
+    {packageJson.version && <meta name="build-version" content={packageJson.version} />}
+    {packageJson.author?.name && <meta name="author" content={packageJson.author.name} />}
+    {packageJson.repository?.url && <meta name="repository" content={packageJson.repository.url} />}
+
     <script>
       function isDarkMode() {
         const preferredDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;

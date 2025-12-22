@@ -1,7 +1,14 @@
 {
   "name": "release-viewer",
+  "version": "0.1.0",
   "module": "index.ts",
   "type": "module",
+  "author": {
+    "name": "Cnily03"
+  },
+  "repository": {
+    "url": "https://github.com/Cnily03/release-viewer"
+  },
   "scripts": {
     "postinstall": "biome migrate --write",
     "dev": "astro dev",
