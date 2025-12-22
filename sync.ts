@@ -450,7 +450,7 @@ const genArchiveCtx = (release: Release, url: string, fnTmpl: string): UrlTempla
   const filename = fnTmpl.replace(/\{\}/g, release.tag.name).replace(/[^a-zA-Z0-9._-]/g, "_");
   return {
     tag: release.tag.name,
-    name: filename,
+    name: `archive/${filename}`,
     release: release.name,
     url: url,
   };
@@ -680,7 +680,7 @@ async function collectDiff(config: Config, compareConfig?: Config | null) {
           const ctx = genArchiveCtx(release, release[archiveProp], `${config.name}-{}.${extMap[archiveProp]}`);
           const o = {
             downloadUrl: release[archiveProp],
-            filename: `archive/${ctx.name}`,
+            filename: ctx.name,
           };
           if (release[archiveProp] !== formerRelease[archiveProp]) {
             if (release[archiveProp] && !formerRelease[archiveProp]) {
@@ -726,7 +726,7 @@ async function collectDiff(config: Config, compareConfig?: Config | null) {
         const ctx = genArchiveCtx(release, release[archiveProp], `${config.name}-{}.${extMap[archiveProp]}`);
         rec.add[release.tag.name]!.push({
           downloadUrl: release[archiveProp],
-          filename: `archive/${ctx.name}`,
+          filename: ctx.name,
         });
       }
     }
@@ -780,13 +780,13 @@ async function createLocalEmptyDownloadTarget(basePath: string, config: Config) 
     if (release.tar_url) {
       const ctx = genArchiveCtx(release, release.tar_url, `${config.name}-{}.tar.gz`);
       fs.mkdirSync(path.join(tagDir, "archive"), { recursive: true });
-      const tarPath = path.join(tagDir, `archive/${ctx.name}`);
+      const tarPath = path.join(tagDir, ctx.name);
       fs.closeSync(fs.openSync(tarPath, "w"));
     }
     if (release.zip_url) {
       const ctx = genArchiveCtx(release, release.zip_url, `${config.name}-{}.zip`);
       fs.mkdirSync(path.join(tagDir, "archive"), { recursive: true });
-      const zipPath = path.join(tagDir, `archive/${ctx.name}`);
+      const zipPath = path.join(tagDir, ctx.name);
       fs.closeSync(fs.openSync(zipPath, "w"));
     }
   }
