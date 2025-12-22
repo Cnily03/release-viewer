@@ -1006,8 +1006,12 @@ async function main() {
           // start single download
           const pDlSingle = (async () => {
             const destPath = path.join(tempDownloadDir, mvType, tag, item.filename);
+            const filenameFmt = item.filename
+              .split("/")
+              .map((name) => `${ANSI.BLUE}${name}${ANSI.RESET}`)
+              .join(" / ");
             printInfo(
-              `${ANSI.BOLD}Downloading file:${ANSI.RESET} ${ANSI.CYAN}${tag}${ANSI.RESET} / ${ANSI.BLUE}${item.filename}${ANSI.RESET}` +
+              `${ANSI.BOLD}Downloading file:${ANSI.RESET} ${ANSI.CYAN}${tag}${ANSI.RESET} / ${filenameFmt}` +
                 `\n${PADDING} ${ANSI.BOLD}${ANSI.DIM}via ${ANSI.RESET}${ANSI.DIM}${item.downloadUrl}${ANSI.RESET}`
             );
             const success = await downloadFile(item.downloadUrl, destPath, 3);
