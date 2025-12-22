@@ -477,14 +477,14 @@ function checkCommandAvailable(cmd: string) {
 function panicSubprocess(subprocess: SyncSubprocess) {
   if (subprocess.exitCode) {
     throw new SubprocessError(
-      `${ANSI.BOLD}Subprocess exited with code ${subprocess.exitCode}:${ANSI.RESET} ${subprocess.stderr}`,
+      `${ANSI.BOLD}Subprocess exited with code ${subprocess.exitCode}:${ANSI.RESET} ${subprocess.stderr || ""}`,
       subprocess.exitCode,
       null
     );
   }
   if (subprocess.signalCode) {
     throw new SubprocessError(
-      `${ANSI.BOLD}Subprocess terminated by signal ${subprocess.signalCode}:${ANSI.RESET} ${subprocess.stderr}`,
+      `${ANSI.BOLD}Subprocess terminated by signal ${subprocess.signalCode}:${ANSI.RESET} ${subprocess.stderr || ""}`,
       null,
       subprocess.signalCode
     );
@@ -853,14 +853,16 @@ async function main() {
     .map((s) => s.replace(/[^a-zA-Z0-9._-]/g, "_"))
     .join(".")}.${process.pid}-XXXXXX`;
   const workDir = (await $`mktemp -d ${tmpTmpl}`.quiet().text()).trim();
-  process.on("exit", async (code) => {
+  process.on("exit", (code) => {
     if (code === 130) return;
     if (code !== 0) printInfo(`${ANSI.YELLOW}Cleaning up working directory...${ANSI.RESET}`);
-    await $`rm -rf ${workDir}`.quiet();
+    // await $`rm -rf ${workDir}`.quiet();
+    Bun.spawnSync(["rm", "-rf", workDir], { stdio: ["ignore", "ignore", "ignore"] });
   });
-  process.on("SIGINT", async () => {
+  process.on("SIGINT", () => {
     printInfo(`${ANSI.YELLOW}Received SIGINT, cleaning up working directory...${ANSI.RESET}`);
-    await $`rm -rf ${workDir}`.quiet();
+    // await $`rm -rf ${workDir}`.quiet();
+    Bun.spawnSync(["rm", "-rf", workDir], { stdio: ["ignore", "ignore", "ignore"] });
     process.exit(130);
   });
   printInfo(`${ANSI.CYAN}Working directory:${ANSI.RESET} ${workDir}`);
