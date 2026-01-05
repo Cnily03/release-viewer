@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
 import { CACHE_DIR } from "./utils.js";
-import { fileURLToPath } from "node:url";
 
 const PKG_NAME = "astro-image-preload";
 const EXPORT_DIR = "_image/";
