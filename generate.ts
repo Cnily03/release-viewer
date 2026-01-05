@@ -578,7 +578,7 @@ async function generate(repoFullname: string, options: Partial<GenerateOptions> 
       assets: assets,
       tar_url: `${tagMap.get(release.tag_name).tarball_url.replace("api.github.com/repos", "github.com").replaceLast("/tarball/", "/archive/")}.tar.gz`,
       zip_url: `${tagMap.get(release.tag_name).zipball_url.replace("api.github.com/repos", "github.com").replaceLast("/zipball/", "/archive/")}.zip`,
-      body: release.body,
+      body: release.body || "",
     };
     logger.info(
       ` - Compiled release with ${assets.length > 0 ? ANSI.GREEN : ANSI.YELLOW}${assets.length} assets${ANSI.RESET}:`,
