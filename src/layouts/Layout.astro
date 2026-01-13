@@ -20,10 +20,10 @@ const { title, description, ...rest } = Astro.props;
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {packageJson.name && <meta name="generator" content={packageJson.name} />}
-    <meta name="build-time" content={new Date().toISOString()} />
-    {packageJson.version && <meta name="build-version" content={packageJson.version} />}
-    {packageJson.author?.name && <meta name="author" content={packageJson.author.name} />}
-    {packageJson.repository?.url && <meta name="repository" content={packageJson.repository.url} />}
+    {packageJson.author?.name && <meta name="sg:author" content={packageJson.author.name} />}
+    {packageJson.repository?.url && <meta name="sg:repository" content={packageJson.repository.url} />}
+    <meta name="sg:build-time" content={new Date().toISOString()} />
+    {packageJson.version && <meta name="sg:build-version" content={packageJson.version} />}
 
     <script>
       function isDarkMode() {
